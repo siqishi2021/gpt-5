@@ -1,0 +1,11 @@
+id: product-launch-page
+title: 智能手表产品页
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：产品发布稿
+  - 目标：展示一款新的实体或数字产品
+  - 功能：大尺寸首屏图片、规格参数区、预购表单
+  - UI 应现代化且以产品为中心
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/product-launch-page.png
+tags:
+  - 落地页

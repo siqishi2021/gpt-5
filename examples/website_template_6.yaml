@@ -1,0 +1,9 @@
+id: website_template_6
+title: 黑白极简风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  黑白极简调性，大字体排版营造视觉张力，以先锋建筑装置图为视觉底，布局错落且秩序感强，适配建筑设计展、设计工作室的品牌展示页。
+screenshot_url: /website_template_6.png
+tags:
+  - website
+  - 中文版

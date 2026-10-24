@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>颜色混合器</title>
+  <style>
+    :root{
+      --bg:#0f1720;
+      --panel:rgba(255,255,255,0.06);
+      --glass:rgba(255,255,255,0.04);
+      --text:#eef2f7;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body,#c{height:100%}
+    body{
+      background:linear-gradient(180deg,var(--bg),#071019 120%);
+      color:var(--text);
+      font-family:'Microsoft YaHei',Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      overflow:hidden;
+      position:relative;
+    }
+    #c{
+      width:100%;
+      height:100%;
+      display:block;
+      touch-action:none;
+      background:transparent;
+    }
+    #ui{
+      position:absolute;
+      top:12px;
+      left:50%;
+      transform:translateX(-50%);
+      width:calc(100% - 24px);
+      max-width:940px;
+      pointer-events:auto;
+      z-index:10;
+    }
+    #title{
+      text-align:center;
+      font-weight:700;
+      margin-bottom:10px;
+      font-size:22px;
+      color:var(--text);
+      text-shadow:0 1px 0 rgba(0,0,0,0.5);
+    }
+    #buttons{
+      display:flex;
+      gap:10px;
+      justify-content:center;
+      flex-wrap:wrap;
+      max-height:96px;
+      padding:6px;
+      overflow:auto;
+      align-items:center;
+      -webkit-overflow-scrolling:touch;
+    }
+    button.spawn{
+      min-width:52px;
+      height:44px;
+      border-radius:8px;
+      border:0;
+      color:white;
+      font-weight:700;
+      padding:6px 8px;
+      font-size:13px;
+      box-shadow:0 6px 14px rgba(2,6,23,0.55), inset 0 -2px 0 rgba(0,0,0,0.14);
+      touch-action:manipulation;
+    }
+    button.spawn:active{transform:translateY(1px)}
+    button.spawn[disabled]{
+      opacity:0.35;
+      filter:grayscale(30%);
+      pointer-events:none;
+    }
+    #hint{
+      position:absolute;
+      left:14px;
+      bottom:14px;
+      color:#cbd5e1;
+      font-size:13px;
+      background:var(--panel);
+      padding:10px 12px;
+      border-radius:10px;
+      backdrop-filter:blur(6px);
+    }
+    #colorsModal, #instructionsModal{
+      position:fixed;
+      left:0;top:0;right:0;bottom:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:rgba(2,6,12,0.5);
+      z-index:120;
+      visibility:hidden;
+      opacity:0;
+      transition:opacity .22s ease, visibility .22s;
+      padding:18px;
+    }
+    #instructionsModal{ z-index:121; }
+    #colorsModal[aria-hidden="false"], #instructionsModal[aria-hidden="false"]{ visibility:visible; opacity:1; }
+    #colorsModal .modal-inner, #instructionsModal .modal-inner{
+      width:min(880px,calc(100% - 48px));
+      max-height:88vh;
+      background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));
+      border-radius:14px;
+      padding:16px;
+      box-shadow:0 24px 48px rgba(2,6,23,0.6);
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      overflow:hidden;
+    }
+    .modal-header{ display:flex; align-items:center; justify-content:space-between; padding:8px 6px; }
+    .modal-title{ font-weight:800; font-size:18px; color:var(--text); }
+    #closeColors, #closeInstructions{ background:transparent;border:0;color:var(--text); font-size:20px; padding:10px; cursor:pointer; border-radius:10px; }
+    .modal-body{ overflow:auto; padding:10px; display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+    #instructionsModal .modal-body{ display:block; font-size:14px; line-height:1.45; color:var(--text); }
+    .color-item{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:10px; background:var(--glass); }
+    .color-swatch{ width:48px; height:48px; border-radius:8px; box-shadow:inset 0 -2px 0 rgba(0,0,0,0.15); flex:0 0 48px; }
+    .color-meta{ font-size:14px; color:var(--text); }
+    .color-name{ font-weight:800; margin-bottom:6px; }
+    .modal-footer{ font-size:12px; color:#cbd5e1; padding:6px 4px; text-align:center; }
+  </style>
+</head>
+<body>
+  <div id="ui">
+    <div id="title">🎨 颜色混合器</div>
+    <div id="buttons">
+      <button id="redBtn" class="spawn" data-color="red" style="background:#e74c3c">红</button>
+      <button id="orangeBtn" class="spawn" data-color="orange" style="background:#e67e22">橙</button>
+      <button id="yellowBtn" class="spawn" data-color="yellow" style="background:#f1c40f;color:#102010">黄</button>
+      <button id="greenBtn" class="spawn" data-color="green" style="background:#2ecc71">绿</button>
+      <button id="blueBtn" class="spawn" data-color="blue" style="background:#3498db">蓝</button>
+      <button class="spawn" data-color="black" style="background:#111111">黑</button>
+      <button class="spawn" data-color="white" style="background:#ffffff;color:#222">白</button>
+      <button id="resetBtn" style="background:#111; color:#fff; border-radius:8px; padding:6px 10px; height:44px; font-weight:600">重置</button>
+      <button id="saveBtn" style="background:#0b5; color:#062; border-radius:8px; padding:6px 10px; height:44px; font-weight:600">保存进度</button>
+      <button id="instructionsBtn" style="background:#226; color:#fff; border-radius:8px; padding:6px 10px; height:44px; font-weight:600">配方</button>
+      <button id="colorsBtn" style="background:#222; color:#fff; border-radius:8px; padding:6px 10px; height:44px; font-weight:600">颜色库</button>
+    </div>
+  </div>
+
+  <!-- 颜色库弹窗 -->
+  <div id="colorsModal" aria-hidden="true">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <div class="modal-title">🌈 已解锁颜色</div>
+        <button id="closeColors" aria-label="关闭">✕</button>
+      </div>
+      <div id="colorsList" class="modal-body"></div>
+      <div class="modal-footer">💡 拖拽方块重叠可混合出新颜色；发现红橙黄绿蓝靛紫即可解锁彩虹</div>
+    </div>
+  </div>
+
+  <!-- 配方弹窗 -->
+  <div id="instructionsModal" aria-hidden="false">
+    <div class="modal-inner">
+      <div class="modal-header">
+        <div class="modal-title">📖 混合配方</div>
+        <button id="closeInstructions" aria-label="关闭">✕</button>
+      </div>
+      <div id="instructionsBody" class="modal-body" style="font-size:13px; line-height:1.35; padding:10px;"></div>
+      <div class="modal-footer">✨ 拖拽两个方块重叠即可混合；更多颜色等你发现</div>
+    </div>
+  </div>
+
+  <canvas id="c"></canvas>
+
+  <script type="module">
+    // ==================== 混合配方表 ====================
+    const mixMap = {
+      'red+blue': {type:'purple', color:'#9b59b6', name:'紫'},
+      'blue+red': {type:'purple', color:'#9b59b6', name:'紫'},
+      'black+white': {type:'gray', color:'#7f8c8d', name:'灰'},
+      'white+black': {type:'gray', color:'#7f8c8d', name:'灰'},
+      'red+black': {type:'maroon', color:'#6e1414', name:'褐红'},
+      'black+red': {type:'maroon', color:'#6e1414', name:'褐红'},
+      'white+red': {type:'pink', color:'#ff6b9a', name:'粉'},
+      'red+white': {type:'pink', color:'#ff6b9a', name:'粉'},
+      'orange+black': {type:'brown', color:'#8b5a2b', name:'棕'},
+      'black+orange': {type:'brown', color:'#8b5a2b', name:'棕'},
+      'green+white': {type:'lime', color:'#a3e635', name:'柠绿'},
+      'white+green': {type:'lime', color:'#a3e635', name:'柠绿'},
+      'green+blue': {type:'turquoise', color:'#1abc9c', name:'青'},
+      'blue+green': {type:'turquoise', color:'#1abc9c', name:'青'},
+      'green+red': {type:'brown', color:'#8b5a2b', name:'棕'},
+      'red+green': {type:'brown', color:'#8b5a2b', name:'棕'},
+      'purple+black': {type:'indigo', color:'#3f51b5', name:'靛'},
+      'black+purple': {type:'indigo', color:'#3f51b5', name:'靛'},
+      'purple+white': {type:'violet', color:'#7c4ddf', name:'紫罗兰'},
+      'white+purple': {type:'violet', color:'#7c4ddf', name:'紫罗兰'},
+      'gray+white': {type:'silver', color:'#c0c0c0', name:'银'},
+      'white+gray': {type:'silver', color:'#c0c0c0', name:'银'},
+      'yellow+orange': {type:'gold', color:'#d4af37', name:'金'},
+      'orange+yellow': {type:'gold', color:'#d4af37', name:'金'},
+      'red+orange': {type:'coral', color:'#ff7f50', name:'珊瑚'},
+      'orange+red': {type:'coral', color:'#ff7f50', name:'珊瑚'},
+      'red+yellow': {type:'marigold', color:'#eaa221', name:'金盏菊'},
+      'yellow+red': {type:'marigold', color:'#eaa221', name:'金盏菊'},
+      'orange+white': {type:'tan', color:'#d2b48c', name:'棕褐'},
+      'white+orange': {type:'tan', color:'#d2b48c', name:'棕褐'}
+    };
+
+    // ==================== 解锁按钮 ====================
+    function unlockButton(type){
+      let btn = document.getElementById(type + 'Btn') || document.querySelector(`button.spawn[data-color="${type}"]`);
+      if(!btn) return;
+      if(btn.dataset?.locked) btn.removeAttribute('data-locked');
+      if(btn.hidden || btn.disabled){
+        btn.hidden = false;
+        btn.disabled = false;
+        btn.animate([{transform:'scale(0.92)'},{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:360,easing:'cubic-bezier(.2,.9,.2,1)'});
+      }
+      checkUnlockRainbow();
+    }
+
+    function checkUnlockRainbow(){
+      const required = ['red','orange','yellow','green','blue','indigo','violet'];
+      const allUnlocked = required.every(t => {
+        const b = document.querySelector(`button.spawn[data-color="${t}"]`);
+        return b && !b.disabled && !b.hidden;
+      });
+      if(allUnlocked){
+        const rbtn = document.querySelector('button.spawn[data-color="rainbow"]');
+        if(rbtn && (rbtn.hidden || rbtn.disabled)){
+          rbtn.hidden = false;
+          rbtn.disabled = false;
+          rbtn.animate([{transform:'scale(0.92)'},{transform:'scale(1.05)'},{transform:'scale(1)'}],{duration:420});
+        }
+      }
+    }
+
+    // ==================== 物理引擎 ====================
+    const canvas = document.getElementById('c');
+    const ctx = canvas.getContext('2d', { alpha: false });
+    
+    function resize() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(canvas.clientWidth * dpr);
+      canvas.height = Math.floor(canvas.clientHeight * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    const W = () => canvas.clientWidth;
+    const H = () => canvas.clientHeight;
+    const GRAVITY = 900;
+    const FRICTION = 0.99;
+    const ELASTICITY = 0.6;
+    const MIN_SIZE = 36;
+    const MAX_SIZE = 64;
+
+    let last = performance.now();
+    const boxes = [];
+
+    function roundRect(ctx,x,y,w,h,r){
+      ctx.beginPath();
+      ctx.moveTo(x+r,y);
+      ctx.arcTo(x+w,y,x+w,y+h,r);
+      ctx.arcTo(x+w,y+h,x,y+h,r);
+      ctx.arcTo(x,y+h,x,y,r);
+      ctx.arcTo(x,y,x+w,y,r);
+      ctx.closePath();
+    }
+
+    class Box {
+      constructor(x,y,size,color,type){
+        this.x = x; this.y = y;
+        this.vx = (Math.random()-0.5)*120;
+        this.vy = -120*(0.2+Math.random()*0.8);
+        this.size = size;
+        this.color = color;
+        this.type = type;
+        this.id = Math.random().toString(36).slice(2,9);
+      }
+      update(dt){
+        this.vy += GRAVITY * dt;
+        this.vx *= FRICTION;
+        this.vy *= FRICTION;
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        if(this.x < 0){ this.x = 0; this.vx = -this.vx * ELASTICITY; }
+        if(this.x + this.size > W()){ this.x = W() - this.size; this.vx = -this.vx * ELASTICITY; }
+        if(this.y + this.size > H()){ this.y = H() - this.size; this.vy = -Math.abs(this.vy) * ELASTICITY; if(Math.abs(this.vy) < 20) this.vy = 0; }
+        if(this.y < 0){ this.y = 0; this.vy = Math.abs(this.vy) * ELASTICITY; }
+      }
+      draw(ctx){
+        if(this.type === 'rainbow'){
+          const g = ctx.createLinearGradient(this.x, this.y, this.x + this.size, this.y + this.size);
+          g.addColorStop(0, '#ff3b3b'); g.addColorStop(0.17, '#ff8c00'); g.addColorStop(0.34, '#ffd500');
+          g.addColorStop(0.51, '#2ecc71'); g.addColorStop(0.68, '#3498db'); g.addColorStop(1, '#9b59b6');
+          ctx.fillStyle = g;
+        } else {
+          ctx.fillStyle = this.color;
+        }
+        roundRect(ctx, this.x, this.y, this.size, this.size, 6);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
+        ctx.fillRect(this.x+4, this.y+this.size-6, this.size-8, 6);
+      }
+    }
+
+    function spawnBox(color, type){
+      const size = MIN_SIZE + Math.random()*(MAX_SIZE-MIN_SIZE);
+      const x = Math.max(8, Math.min(W()-size-8, Math.random()*(W()-size)));
+      const y = 12;
+      boxes.push(new Box(x,y,size,color,type));
+    }
+
+    function overlap(a,b){
+      const T = 4;
+      return !(a.x + a.size < b.x - T || b.x + b.size < a.x - T || a.y + a.size < b.y - T || b.y + b.size < a.y - T);
+    }
+
+    function checkMixes(){
+      for(let i=0;i<boxes.length;i++){
+        for(let j=i+1;j<boxes.length;j++){
+          const A = boxes[i], B = boxes[j];
+          if(overlap(A,B)){
+            const key = `${A.type}+${B.type}`;
+            if(mixMap[key]){
+              const m = mixMap[key];
+              const nx = (A.x + B.x)/2, ny = (A.y + B.y)/2;
+              const nsize = Math.max((A.size + B.size)/1.8, MIN_SIZE);
+              boxes.splice(j,1); boxes.splice(i,1);
+              const nb = new Box(nx, ny, nsize, m.color, m.type);
+              nb.vx = (Math.random()-0.5)*180; nb.vy = -140;
+              boxes.push(nb);
+              unlockButton(m.type);
+              return;
+            } else {
+              [A.vx, A.vy, B.vx, B.vy] = [B.vx*0.9, B.vy*0.9, A.vx*0.9, A.vy*0.9];
+            }
+          }
+        }
+      }
+    }
+
+    function frame(now){
+      const dt = Math.min((now - last)/1000, 1/15);
+      last = now;
+      for(const b of boxes) b.update(dt);
+      checkMixes();
+      ctx.fillStyle = '#071018';
+      ctx.fillRect(0,0,W(),H());
+      ctx.fillStyle = 'rgba(255,255,255,0.03)';
+      ctx.fillRect(0, H()-56, W(), 56);
+      for(const b of boxes) b.draw(ctx);
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = '13px "Microsoft YaHei",system-ui,Arial';
+      ctx.fillText(`方块数量: ${boxes.length}`, 10, 20);
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+
+    // ==================== 拖拽 ====================
+    let drag = null;
+    function getPos(e){ return e.touches?.[0] ? {x:e.touches[0].clientX, y:e.touches[0].clientY} : {x:e.clientX, y:e.clientY}; }
+    function startDrag(e){
+      const p = getPos(e);
+      for(let i=boxes.length-1;i>=0;i--){
+        const b = boxes[i];
+        if(p.x >= b.x && p.x <= b.x + b.size && p.y >= b.y && p.y <= b.y + b.size){
+          drag = {box:b, ox: p.x - b.x, oy: p.y - b.y};
+          boxes.splice(i,1); boxes.push(b);
+          b.vx = b.vy = 0;
+          break;
+        }
+      }
+    }
+    function moveDrag(e){
+      if(!drag) return;
+      e.preventDefault();
+      const p = getPos(e);
+      drag.box.x = p.x - drag.ox;
+      drag.box.y = p.y - drag.oy;
+      drag.box.vx = (Math.random()-0.5)*60;
+      drag.box.vy = (Math.random()-0.5)*60;
+    }
+    canvas.addEventListener('mousedown', startDrag);
+    canvas.addEventListener('touchstart', startDrag, {passive:false});
+    window.addEventListener('mousemove', moveDrag);
+    window.addEventListener('touchmove', moveDrag, {passive:false});
+    window.addEventListener('mouseup', ()=>drag=null);
+    window.addEventListener('touchend', ()=>drag=null);
+
+    // ==================== UI 交互 ====================
+    const palette = {
+      red:'#e74c3c', orange:'#e67e22', yellow:'#f1c40f', green:'#2ecc71', blue:'#3498db',
+      black:'#111111', white:'#ffffff', purple:'#9b59b6', gray:'#7f8c8d', pink:'#ff6b9a',
+      brown:'#8b5a2b', maroon:'#6e1414', lime:'#a3e635', indigo:'#3f51b5', violet:'#7c4ddf',
+      gold:'#d4af37', silver:'#c0c0c0', tan:'#d2b48c', turquoise:'#1abc9c', coral:'#ff7f50',
+      marigold:'#eaa221', rainbow:'#ffffff'
+    };
+
+    document.querySelectorAll('button.spawn').forEach(btn => {
+      btn.addEventListener('click', ()=>{
+        if(btn.dataset.locked === 'true') return;
+        const key = btn.dataset.color;
+        spawnBox(palette[key] || '#999', key);
+      });
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', ()=> boxes.length = 0);
+
+    // 保存进度
+    document.getElementById('saveBtn').addEventListener('click', ()=>{
+      const unlocked = [];
+      document.querySelectorAll('button.spawn').forEach(b=>{ if(!b.hidden && !b.disabled) unlocked.push(b.dataset.color); });
+      localStorage.setItem('colorMixerUnlocked', JSON.stringify(unlocked));
+      alert('进度已保存！');
+    });
+
+    // 加载进度
+    (function loadProgress(){
+      const saved = localStorage.getItem('colorMixerUnlocked');
+      if(saved) JSON.parse(saved).forEach(t => unlockButton(t));
+    })();
+
+    // 颜色库弹窗
+    const colorsModal = document.getElementById('colorsModal');
+    document.getElementById('colorsBtn').addEventListener('click', ()=>{
+      const list = document.getElementById('colorsList');
+      const colors = [...new Set([...document.querySelectorAll('button.spawn')].map(b=>b.dataset.color).filter(Boolean))];
+      list.innerHTML = colors.map(c => {
+        const hex = palette[c] || '#999';
+        return `<div class="color-item"><div class="color-swatch" style="background:${c==='rainbow'?'linear-gradient(90deg,#ff3b3b,#ff8c00,#ffd500,#2ecc71,#3498db,#9b59b6)':hex}"></div><div class="color-meta"><div class="color-name">${c}</div></div></div>`;
+      }).join('');
+      colorsModal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('closeColors').addEventListener('click', ()=> colorsModal.setAttribute('aria-hidden','true'));
+
+    // 配方弹窗
+    const instModal = document.getElementById('instructionsModal');
+    document.getElementById('instructionsBtn').addEventListener('click', ()=>{
+      const body = document.getElementById('instructionsBody');
+      const seen = new Set();
+      body.innerHTML = Object.entries(mixMap).map(([k,v])=>{
+        const [a,b] = k.split('+');
+        const key = [a,b].sort().join('+');
+        if(seen.has(key)) return '';
+        seen.add(key);
+        return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;"><span style="width:18px;height:18px;border-radius:4px;background:${palette[a]||'#999'}"></span><span>+</span><span style="width:18px;height:18px;border-radius:4px;background:${palette[b]||'#999'}"></span><span>=</span><span style="width:18px;height:18px;border-radius:4px;background:${v.color}"></span><span>${v.name || v.type}</span></div>`;
+      }).join('');
+      instModal.setAttribute('aria-hidden','false');
+    });
+    document.getElementById('closeInstructions').addEventListener('click', ()=> instModal.setAttribute('aria-hidden','true'));
+
+    // 提示
+    const hint = document.createElement('div');
+    hint.id = 'hint';
+    hint.textContent = '💡 点击按钮生成方块，拖拽重叠可混合出新颜色！';
+    document.body.appendChild(hint);
+    setTimeout(()=> hint.remove(), 4000);
+  </script>
+</body>
+</html>

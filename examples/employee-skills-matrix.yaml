@@ -1,0 +1,11 @@
+id: employee-skills-matrix
+title: 员工技能矩阵
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：员工技能矩阵
+  - 目标：追踪团队技能覆盖情况
+  - 功能：技能列表 vs 员工网格、熟练度等级
+  - UI 应面向人力资源场景
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/employee-skills-matrix.png
+tags:
+  - 实用工具

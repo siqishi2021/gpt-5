@@ -1,0 +1,12 @@
+id: audio-step-sequencer
+title: 音频步进音序器
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：音频步进音序器
+  - 技术栈：WebAudio API
+  - 目标：16 步鼓点网格
+  - 功能：速度调节、摇摆节奏、模式保存/加载、导出 WAV（渲染简单缓冲区）
+  - UI 应具有未来感，让演奏变得有趣！
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/audio-step-sequencer.png
+tags:
+  - 应用

@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>像素世界征服</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+            font-family: 'Courier New', 'Microsoft YaHei', monospace;
+            color: #fff;
+            user-select: none;
+        }
+        #app {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas {
+            display: block;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+            max-width: 100%;
+            max-height: 100%;
+            cursor: crosshair;
+        }
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+        #leaderboard {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 240px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 15px;
+            pointer-events: auto;
+            font-size: 14px;
+            max-height: 40vh;
+            overflow-y: scroll;
+            scrollbar-width: auto;
+            scrollbar-color: #fff rgba(255,255,255,0.1);
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        #news-feed {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            width: 300px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 10px;
+            pointer-events: none;
+            font-size: 12px;
+            max-height: 25vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column-reverse;
+        }
+        .news-title {
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+            margin-bottom: 5px;
+            padding-bottom: 2px;
+            text-transform: uppercase;
+            color: #ffaa00;
+        }
+        #news-list {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 4px;
+        }
+        .news-item {
+            animation: slideIn 0.3s ease-out;
+            padding: 2px 0;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        #leaderboard::-webkit-scrollbar {
+            width: 4px;
+        }
+        #leaderboard::-webkit-scrollbar-thumb {
+            background: #555;
+        }
+        #controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 10px;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            font-size: 12px;
+            color: #fff;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .year-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffaa00;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 5px;
+        }
+        #controls input {
+            cursor: pointer;
+            accent-color: #fff;
+        }
+        .leaderboard-title {
+            font-weight: bold;
+            border-bottom: 1px solid #fff;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            text-align: center;
+        }
+        .nation-entry {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s;
+        }
+        .vignette {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.7) 100%);
+        }
+        .tooltip {
+            position: fixed;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            pointer-events: none;
+            font-family: 'Microsoft YaHei', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 100;
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            transition: opacity 0.1s;
+        }
+        .tooltip.hidden {
+            opacity: 0;
+        }
+        #capital-board {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            width: 240px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            padding: 12px;
+            pointer-events: auto;
+            font-size: 13px;
+            max-height: 36vh;
+            overflow-y: auto;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+        #capital-list {
+            margin-top: 8px;
+        }
+        .capital-entry {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            font-size: 13px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <canvas id="mapCanvas"></canvas>
+        <div id="ui-overlay">
+            <div id="tooltip" class="tooltip hidden"></div>
+            <div id="news-feed">
+                <div class="news-title">📰 世界新闻</div>
+                <div id="news-list"></div>
+            </div>
+            <div id="controls">
+                <div class="year-display">📅 年份 <span id="year-val">0</span></div>
+                <label for="speedRange">⚡ 模拟速度</label>
+                <input type="range" id="speedRange" min="1" max="10" value="1">
+                <div style="display:flex;gap:8px;margin-top:6px;">
+                    <button id="resetBtn" title="重置所有国家" style="padding:6px 8px;background:#aa0000;border:none;color:#fff;border-radius:4px;cursor:pointer;font-size:12px;pointer-events:auto;flex:1;">全部重置</button>
+                    <button id="pauseBtn" title="暂停/继续模拟" style="padding:6px 8px;background:#444;border:none;color:#fff;border-radius:4px;cursor:pointer;font-size:12px;pointer-events:auto;flex:1;">暂停</button>
+                </div>
+            </div>
+            <div id="leaderboard">
+                <div class="leaderboard-title">🌍 世界列强</div>
+                <div id="leaderboard-list"></div>
+            </div>
+            <div id="capital-board">
+                <div class="leaderboard-title">🏙️ 首都人口</div>
+                <div id="capital-list"></div>
+            </div>
+            <div class="vignette"></div>
+        </div>
+    </div>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://esm.sh/three"
+        }
+    }
+    </script>
+    <script type="module">
+        // ==================== 国家类 ====================
+        class Nation {
+            constructor(id, name, capitalName, colorHsl, x, y, frameCreated) {
+                this.id = id;
+                this.name = name;
+                this.capitalName = capitalName;
+                this.colorHsl = colorHsl;
+                this.rgb = this.hslToRgb(colorHsl);
+                this.capital = { x, y };
+                this.frontier = [{ x, y }];
+                this.size = 1;
+                this.capitalPopulation = 1;
+                this.diplomacy = new Map();
+                this.isDead = false;
+                this.isCollapsing = false;
+                this.frameCreated = frameCreated;
+                this.lastExpansionFrame = frameCreated;
+                this.expansionBudget = 0;
+                this.isGoldenAge = false;
+                this.goldenAgeTimer = 0;
+                this.stability = 100;
+            }
+            hslToRgb(hslStr) {
+                const parts = hslStr.match(/\d+(\.\d+)?/g);
+                const h = parseFloat(parts[0]) / 360;
+                const s = parseFloat(parts[1]) / 100;
+                const l = parseFloat(parts[2]) / 100;
+                let r, g, b;
+                if (s === 0) {
+                    r = g = b = l;
+                } else {
+                    const hue2rgb = (p, q, t) => {
+                        if (t < 0) t += 1;
+                        if (t > 1) t -= 1;
+                        if (t < 1/6) return p + (q - p) * 6 * t;
+                        if (t < 1/2) return q;
+                        if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                        return p;
+                    };
+                    const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                    const p = 2 * l - q;
+                    r = hue2rgb(p, q, h + 1/3);
+                    g = hue2rgb(p, q, h);
+                    b = hue2rgb(p, q, h - 1/3);
+                }
+                return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
+            }
+        }
+
+        // ==================== 模拟主类 ====================
+        class Simulation {
+            constructor() {
+                this.canvas = document.getElementById('mapCanvas');
+                this.ctx = this.canvas.getContext('2d', { alpha: false });
+                this.mapImage = new Image();
+                this.mapImage.src = 'world_map.png';
+                this.grid = [];
+                this.cols = 0;
+                this.rows = 0;
+                this.nations = [];
+                this.nationLookup = new Map();
+                this.nextNationId = 1;
+                this.frame = 0;
+                this.warPixels = [];
+                this.activeWaves = [];
+                this.meteors = [];
+                this.news = [];
+                this.history = [];
+                this.audioContext = null;
+                this.mapLoaded = false;
+                this.simulationSpeed = 1;
+                this.simulationPaused = false;
+
+                // 中文名称生成器
+                this.prefixes = ['龙', '凤', '炎', '华', '夏', '唐', '汉', '秦', '周', '商', '明', '清', '大', '新', '北', '南', '东', '西', '天', '圣', '神', '星', '月', '阳', '云', '雷', '风', '火', '水', '土', '金', '木'];
+                this.suffixes = ['国', '帝国', '王国', '联邦', '共和国', '联盟', '王朝', '公国', '汗国', '领地', '部落', '合众国'];
+                this.capitalPrefixes = ['京', '盛', '安', '平', '宁', '昌', '永', '长', '兴', '隆', '庆', '丰', '泰', '和', '顺', '康', '乐', '光', '明', '耀', '华', '中', '洛', '阳', '江', '海', '山', '川', '云', '天'];
+                this.capitalSuffixes = ['城', '都', '京', '邑', '州', '府', '镇', '堡', '关', '阳', '安', '宁', '平', '昌', '兴'];
+
+                window.addEventListener('resize', () => this.resize());
+                this.canvas.addEventListener('click', (e) => this.handleInteraction(e));
+                this.canvas.addEventListener('touchstart', (e) => this.handleInteraction(e));
+                this.canvas.addEventListener('mousemove', (e) => this.handleHover(e));
+                this.canvas.addEventListener('mouseleave', () => this.hideTooltip());
+                window.addEventListener('click', () => this.initAudio(), { once: true });
+
+                this.tooltip = document.getElementById('tooltip');
+                this.yearVal = document.getElementById('year-val');
+                this.capitalBoard = document.getElementById('capital-board');
+
+                const speedInput = document.getElementById('speedRange');
+                if (speedInput) {
+                    speedInput.addEventListener('input', (e) => {
+                        this.simulationSpeed = parseInt(e.target.value, 10);
+                    });
+                }
+
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', () => this.resetAllNations());
+                }
+
+                const pauseBtn = document.getElementById('pauseBtn');
+                if (pauseBtn) {
+                    pauseBtn.addEventListener('click', () => {
+                        this.simulationPaused = !this.simulationPaused;
+                        pauseBtn.textContent = this.simulationPaused ? '继续' : '暂停';
+                        pauseBtn.style.background = this.simulationPaused ? '#227722' : '#444';
+                    });
+                }
+
+                this.mapImage.onload = () => this.processImage();
+            }
+
+            async initAudio() {
+                if (this.audioContext) return;
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                try {
+                    const response = await fetch('ambient_wind.mp3');
+                    const arrayBuffer = await response.arrayBuffer();
+                    const audioBuffer = await this.audioContext.decodeAudioData(arrayBuffer);
+                    const source = this.audioContext.createBufferSource();
+                    source.buffer = audioBuffer;
+                    source.loop = true;
+                    const gainNode = this.audioContext.createGain();
+                    gainNode.gain.value = 0.2;
+                    source.connect(gainNode);
+                    gainNode.connect(this.audioContext.destination);
+                    source.start(0);
+                } catch (e) { console.error("音频加载失败", e); }
+            }
+
+            processImage() {
+                this.cols = Math.floor(this.mapImage.width / 4);
+                this.rows = Math.floor(this.mapImage.height / 4);
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = this.cols;
+                tempCanvas.height = this.rows;
+                tempCtx.drawImage(this.mapImage, 0, 0, this.cols, this.rows);
+                const imageData = tempCtx.getImageData(0, 0, this.cols, this.rows).data;
+                this.grid = Array.from({ length: this.rows }, () => new Int16Array(this.cols));
+                for (let y = 0; y < this.rows; y++) {
+                    for (let x = 0; x < this.cols; x++) {
+                        const idx = (y * this.cols + x) * 4;
+                        const r = imageData[idx];
+                        const g = imageData[idx + 1];
+                        const b = imageData[idx + 2];
+                        this.grid[y][x] = (g > b && g > 40) ? 0 : -1;
+                    }
+                }
+                this.mapLoaded = true;
+                this.resize();
+                this.animate();
+            }
+
+            resize() {
+                if (!this.mapLoaded) return;
+                const displayWidth = window.innerWidth;
+                const displayHeight = window.innerHeight;
+                this.canvas.width = this.cols;
+                this.canvas.height = this.rows;
+                this.canvas.style.width = `${displayWidth}px`;
+                this.canvas.style.height = `${displayHeight}px`;
+                this.ctx.imageSmoothingEnabled = false;
+            }
+
+            handleInteraction(e) {
+                if (!this.mapLoaded) return;
+                const rect = this.canvas.getBoundingClientRect();
+                const touch = e.touches ? e.touches[0] : e;
+                const x = Math.floor(((touch.clientX - rect.left) / rect.width) * this.cols);
+                const y = Math.floor(((touch.clientY - rect.top) / rect.height) * this.rows);
+                if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+                    const val = this.grid[y][x];
+                    if (val === 0 || (val > 0 && !this.nationLookup.has(val))) {
+                        this.spawnNation(x, y);
+                    }
+                }
+            }
+
+            handleHover(e) {
+                if (!this.mapLoaded) return;
+                const rect = this.canvas.getBoundingClientRect();
+                const x = Math.floor(((e.clientX - rect.left) / rect.width) * this.cols);
+                const y = Math.floor(((e.clientY - rect.top) / rect.height) * this.rows);
+                if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+                    let hoveredCapitalNation = null;
+                    for (const n of this.nations) {
+                        if (n.isDead) continue;
+                        if (Math.abs(x - n.capital.x) <= 1 && Math.abs(y - n.capital.y) <= 1) {
+                            hoveredCapitalNation = n;
+                            break;
+                        }
+                    }
+                    if (hoveredCapitalNation) {
+                        this.showTooltip(`${hoveredCapitalNation.capitalName}，${hoveredCapitalNation.name}`, e.clientX, e.clientY);
+                        return;
+                    }
+                    const nationId = this.grid[y][x];
+                    if (nationId > 0) {
+                        const nation = this.nationLookup.get(nationId);
+                        if (nation) {
+                            let stabilityText = "稳定";
+                            if (nation.isCollapsing) {
+                                stabilityText = "已被征服";
+                            } else if (nation.stability < 15) {
+                                stabilityText = "崩溃中";
+                            } else if (nation.stability < 60) {
+                                stabilityText = "不稳定";
+                            }
+                            this.showTooltip(`${nation.name} (${stabilityText}: ${Math.floor(nation.stability)}%)`, e.clientX, e.clientY);
+                            return;
+                        }
+                    }
+                }
+                this.hideTooltip();
+            }
+
+            showTooltip(text, x, y) {
+                this.tooltip.textContent = text;
+                this.tooltip.classList.remove('hidden');
+                this.tooltip.style.left = `${x + 15}px`;
+                this.tooltip.style.top = `${y + 15}px`;
+            }
+
+            hideTooltip() {
+                this.tooltip.classList.add('hidden');
+            }
+
+            getYear() {
+                return Math.floor(this.frame / 300);
+            }
+
+            spawnNation(x, y, nameOverride = null) {
+                const id = this.nextNationId++;
+                const name = nameOverride || this.generateName();
+                const capitalName = this.generateCapitalName();
+                const hue = (id * 137.508) % 360;
+                const colorHsl = `hsl(${hue}, 75%, 50%)`;
+                const nation = new Nation(id, name, capitalName, colorHsl, x, y, this.frame);
+                this.nations.push(nation);
+                this.nationLookup.set(id, nation);
+                this.grid[y][x] = id;
+                this.logNews(`${name} 建立了！`, nation.colorHsl, true);
+                return nation;
+            }
+
+            logNews(text, color = '#fff', important = false) {
+                const list = document.getElementById('news-list');
+                const item = document.createElement('div');
+                item.className = 'news-item';
+                item.style.color = color;
+                item.textContent = `> ${text}`;
+                list.appendChild(item);
+                while(list.children.length > 10) {
+                    list.removeChild(list.firstChild);
+                }
+                if (important) {
+                    this.history.push({ year: this.getYear(), text: text, color: color });
+                }
+            }
+
+            generateName() {
+                const pre = this.prefixes[Math.floor(Math.random() * this.prefixes.length)];
+                const suf = this.suffixes[Math.floor(Math.random() * this.suffixes.length)];
+                return pre + suf;
+            }
+
+            generateCapitalName() {
+                const pre = this.capitalPrefixes[Math.floor(Math.random() * this.capitalPrefixes.length)];
+                const suf = this.capitalSuffixes[Math.floor(Math.random() * this.capitalSuffixes.length)];
+                return pre + suf;
+            }
+
+            update() {
+                this.warPixels = [];
+                if (this.frame % 30 === 0) {
+                    this.yearVal.textContent = this.getYear();
+                }
+
+                // 随机陨石
+                if (Math.random() < 0.0005) {
+                    const rx = Math.floor(Math.random() * this.cols);
+                    const ry = Math.floor(Math.random() * this.rows);
+                    if (this.grid[ry][rx] !== -1) {
+                        this.meteors.push({ x: rx, y: ry, radius: 10 + Math.random() * 15, timer: 120 });
+                        this.logNews("⚠️ 警报：陨石正飞向地球！", "#ff4400", true);
+                    }
+                }
+
+                for (let i = this.meteors.length - 1; i >= 0; i--) {
+                    const m = this.meteors[i];
+                    m.timer--;
+                    if (m.timer === 0) {
+                        this.impactMeteor(m);
+                        this.meteors.splice(i, 1);
+                    }
+                }
+
+                // 外交评估
+                if (this.frame % 60 === 0) {
+                    this.nations.forEach(nation => {
+                        if (nation.isDead) return;
+                        nation.diplomacy.forEach((data, otherId) => {
+                            const other = this.nationLookup.get(otherId);
+                            if (!other || other.isDead) {
+                                nation.diplomacy.delete(otherId);
+                                return;
+                            }
+                            data.timer--;
+                            if (data.status === 'war' && data.timer <= 0) {
+                                const roll = Math.random();
+                                const sizeRatio = nation.size / (nation.size + other.size);
+                                const isStalemate = sizeRatio > 0.4 && sizeRatio < 0.6;
+                                if (isStalemate && roll < 0.2) {
+                                    data.status = 'neutral';
+                                    data.timer = 20 + Math.random() * 50;
+                                } else {
+                                    data.timer = 100;
+                                }
+                                const otherData = other.diplomacy.get(nation.id);
+                                if (otherData) {
+                                    otherData.status = data.status;
+                                    otherData.timer = data.timer;
+                                }
+                            } else if (data.status === 'neutral' && data.timer <= 0) {
+                                const roll = Math.random();
+                                if (roll < 0.7) {
+                                    data.status = 'war';
+                                    data.timer = 50 + Math.random() * 100;
+                                } else if (roll < 0.9) {
+                                    data.status = 'alliance';
+                                    data.timer = 80 + Math.random() * 150;
+                                } else {
+                                    data.timer = 5 + Math.random() * 10;
+                                }
+                                const otherData = other.diplomacy.get(nation.id);
+                                if (otherData) {
+                                    otherData.status = data.status;
+                                    otherData.timer = data.timer;
+                                }
+                            } else if (data.status === 'alliance' && data.timer <= 0) {
+                                const roll = Math.random();
+                                if (roll < 0.6) {
+                                    data.timer = 100;
+                                } else {
+                                    data.status = 'neutral';
+                                    data.timer = 20;
+                                }
+                                const otherData = other.diplomacy.get(nation.id);
+                                if (otherData) {
+                                    otherData.status = data.status;
+                                    otherData.timer = data.timer;
+                                }
+                            }
+                        });
+                    });
+                }
+
+                // 分裂/内战
+                if (this.frame % 200 === 0 && this.nations.length > 0) {
+                    const potentialParent = this.nations[Math.floor(Math.random() * this.nations.length)];
+                    if (!potentialParent.isDead && potentialParent.size > 150) {
+                        const revoltChance = (100 - potentialParent.stability) / 800;
+                        if (Math.random() < revoltChance) {
+                            this.handleSecession(potentialParent);
+                        }
+                    }
+                }
+
+                // 处理征服波
+                if (this.activeWaves.length > 0) {
+                    for (let i = this.activeWaves.length - 1; i >= 0; i--) {
+                        const wave = this.activeWaves[i];
+                        const victim = this.nationLookup.get(wave.victimId);
+                        const attacker = wave.attacker;
+                        wave.radius += 0.8;
+                        const r2 = wave.radius * wave.radius;
+                        const minY = Math.max(0, Math.floor(wave.origin.y - wave.radius));
+                        const maxY = Math.min(this.rows - 1, Math.ceil(wave.origin.y + wave.radius));
+                        const minX = Math.max(0, Math.floor(wave.origin.x - wave.radius));
+                        const maxX = Math.min(this.cols - 1, Math.ceil(wave.origin.x + wave.radius));
+                        for (let y = minY; y <= maxY; y++) {
+                            for (let x = minX; x <= maxX; x++) {
+                                const dx = x - wave.origin.x;
+                                const dy = y - wave.origin.y;
+                                const d2 = dx*dx + dy*dy;
+                                if (d2 <= r2) {
+                                    if (this.grid[y][x] === wave.victimId) {
+                                        this.grid[y][x] = attacker.id;
+                                        attacker.size++;
+                                        if (victim) victim.size--;
+                                        if (Math.random() < 0.05) attacker.frontier.push({x, y});
+                                    }
+                                }
+                            }
+                        }
+                        if ((victim && victim.size <= 0) || !victim || wave.radius > 1000) {
+                            if (victim) this.nationLookup.delete(victim.id);
+                            this.activeWaves.splice(i, 1);
+                        }
+                    }
+                }
+
+                this.nations.forEach(nation => {
+                    if (nation.isDead || nation.isCollapsing) return;
+
+                    let stabilityChange = 0.02;
+                    stabilityChange -= (nation.size / 15000);
+                    let inWar = false;
+                    nation.diplomacy.forEach(d => {
+                        if (d.status === 'war') {
+                            stabilityChange -= 0.03;
+                            inWar = true;
+                        }
+                    });
+                    if (nation.isGoldenAge) stabilityChange += 0.25;
+                    nation.stability = Math.max(0, Math.min(100, nation.stability + stabilityChange));
+
+                    if (!nation.isGoldenAge && Math.random() < 0.0001) {
+                        nation.isGoldenAge = true;
+                        nation.goldenAgeTimer = 1200 + Math.random() * 1800;
+                        this.logNews(`${nation.name} 进入了黄金时代！`, nation.colorHsl, true);
+                    }
+                    if (nation.isGoldenAge) {
+                        nation.goldenAgeTimer--;
+                        if (nation.goldenAgeTimer <= 0) nation.isGoldenAge = false;
+                    }
+
+                    let stabilityMult = 0.5 + (nation.stability / 200);
+                    let rate = (0.4 + (Math.random() * 0.2)) * stabilityMult;
+                    if (nation.isGoldenAge) rate *= 3;
+                    nation.expansionBudget += rate;
+
+                    let attempts = 0;
+                    const maxAttempts = 100;
+                    while (nation.expansionBudget >= 1 && attempts < maxAttempts) {
+                        attempts++;
+                        if (nation.frontier.length === 0) {
+                            nation.expansionBudget = 0;
+                            break;
+                        }
+                        const fIdx = Math.floor(Math.random() * nation.frontier.length);
+                        const { x, y } = nation.frontier[fIdx];
+                        const neighbors = [
+                            { x: x + 1, y }, { x: x - 1, y }, { x, y: y + 1 }, { x, y: y - 1 }
+                        ];
+                        let expanded = false;
+                        let stillFrontier = false;
+                        for (const neighbor of neighbors) {
+                            if (neighbor.x >= 0 && neighbor.x < this.cols && neighbor.y >= 0 && neighbor.y < this.rows) {
+                                const target = this.grid[neighbor.y][neighbor.x];
+                                if (target === 0 || (target > 0 && !this.nationLookup.has(target))) {
+                                    let capitalVictim = null;
+                                    for (const possible of this.nations) {
+                                        if (possible.isDead) continue;
+                                        if (possible.capital && possible.capital.x === neighbor.x && possible.capital.y === neighbor.y) {
+                                            capitalVictim = possible;
+                                            break;
+                                        }
+                                    }
+                                    if (capitalVictim) {
+                                        this.initiateWaveCapture(nation, capitalVictim, { x: neighbor.x, y: neighbor.y });
+                                        nation.expansionBudget -= 1;
+                                        expanded = true;
+                                        stillFrontier = true;
+                                        break;
+                                    } else {
+                                        this.grid[neighbor.y][neighbor.x] = nation.id;
+                                        nation.frontier.push(neighbor);
+                                        nation.size++;
+                                        nation.lastExpansionFrame = this.frame;
+                                        nation.expansionBudget -= 1;
+                                        expanded = true;
+                                        stillFrontier = true;
+                                        break;
+                                    }
+                                } else if (target > 0 && target !== nation.id) {
+                                    this.handleDiplomacy(nation, target, neighbor);
+                                    stillFrontier = true;
+                                } else if (target === -1) {
+                                    if (Math.random() < 0.02) {
+                                        this.islandHop(nation, neighbor.x, neighbor.y);
+                                    }
+                                }
+                            }
+                        }
+                        if (!stillFrontier && !expanded) {
+                            nation.frontier.splice(fIdx, 1);
+                        }
+                        if (!expanded) {
+                            nation.expansionBudget -= 0.1;
+                        }
+                    }
+
+                    if (this.frame % 100 === 0 && nation.size > 0) {
+                        if (nation.frontier.length < 10) {
+                            this.refreshFrontier(nation);
+                            const randP = nation.frontier[Math.floor(Math.random() * nation.frontier.length)];
+                            if (randP) this.islandHop(nation, randP.x, randP.y);
+                        }
+                    }
+                });
+
+                this.updateLeaderboard();
+            }
+
+            refreshFrontier(nation) {
+                for(let i=0; i<30; i++) {
+                    const rx = Math.floor(Math.random() * this.cols);
+                    const ry = Math.floor(Math.random() * this.rows);
+                    if (this.grid[ry][rx] === nation.id) {
+                        nation.frontier.push({ x: rx, y: ry });
+                    }
+                }
+            }
+
+            initiateWaveCapture(attacker, victim, origin) {
+                if (victim.isDead || victim.isCollapsing) return;
+                victim.isDead = true;
+                victim.isCollapsing = true;
+                this.logNews(`${victim.name} 被 ${attacker.name} 征服了！`, victim.colorHsl, true);
+                this.activeWaves.push({
+                    attacker: attacker,
+                    victimId: victim.id,
+                    origin: { x: origin.x, y: origin.y },
+                    radius: 0
+                });
+            }
+
+            impactMeteor(m) {
+                this.logNews("💥 撞击：陨石击中了地图！", "#ffaa00", true);
+                const r2 = m.radius * m.radius;
+                for (let y = Math.floor(m.y - m.radius); y <= Math.ceil(m.y + m.radius); y++) {
+                    for (let x = Math.floor(m.x - m.radius); x <= Math.ceil(m.x + m.radius); x++) {
+                        if (x >= 0 && x < this.cols && y >= 0 && y < this.rows) {
+                            const dx = x - m.x;
+                            const dy = y - m.y;
+                            if (dx*dx + dy*dy <= r2) {
+                                const val = this.grid[y][x];
+                                if (val > 0) {
+                                    const n = this.nationLookup.get(val);
+                                    if (n) n.size--;
+                                }
+                                if (this.grid[y][x] !== -1) {
+                                    this.grid[y][x] = 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            handleSecession(parent) {
+                let found = false;
+                let rx, ry;
+                for(let i=0; i<100; i++) {
+                    rx = Math.floor(Math.random() * this.cols);
+                    ry = Math.floor(Math.random() * this.rows);
+                    if (this.grid[ry][rx] === parent.id) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return;
+
+                const rebelName = "新" + parent.name;
+                this.logNews(`💥 内战：叛军在 ${parent.name} 崛起！`, "#ff4444", true);
+                const rebel = this.spawnNation(rx, ry, rebelName);
+                parent.stability -= 6;
+                const initialWarTimer = 70;
+                rebel.diplomacy.set(parent.id, { status: 'war', timer: initialWarTimer });
+                parent.diplomacy.set(rebel.id, { status: 'war', timer: initialWarTimer });
+
+                const range = 1 + Math.floor(Math.random() * 2);
+                for (let dy = -range; dy <= range; dy++) {
+                    for (let dx = -range; dx <= range; dx++) {
+                        if (dx*dx + dy*dy > range*range) continue;
+                        const nx = rx + dx;
+                        const ny = ry + dy;
+                        if (nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows) {
+                            if (this.grid[ny][nx] === parent.id) {
+                                if (Math.random() < 0.7) {
+                                    this.grid[ny][nx] = rebel.id;
+                                    rebel.frontier.push({ x: nx, y: ny });
+                                    rebel.size++;
+                                    parent.size--;
+                                }
+                            }
+                        }
+                    }
+                }
+                parent.stability = Math.min(100, parent.stability + 2);
+            }
+
+            islandHop(nation, startX, startY) {
+                const range = 40;
+                const attempts = 20;
+                for(let i=0; i<attempts; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const dist = 2 + Math.random() * range;
+                    const nx = Math.floor(startX + Math.cos(angle) * dist);
+                    const ny = Math.floor(startY + Math.sin(angle) * dist);
+                    if (nx >= 0 && nx < this.cols && ny >= 0 && ny < this.rows) {
+                        const target = this.grid[ny][nx];
+                        if (target === 0 || (target > 0 && !this.nationLookup.has(target))) {
+                            this.grid[ny][nx] = nation.id;
+                            nation.frontier.push({ x: nx, y: ny });
+                            nation.size++;
+                            return;
+                        } else if (target > 0 && target !== nation.id) {
+                            const data = nation.diplomacy.get(target);
+                            if (data && data.status === 'war' && Math.random() < 0.1) {
+                                this.handleDiplomacy(nation, target, {x: nx, y: ny});
+                            }
+                        }
+                    }
+                }
+            }
+
+            handleDiplomacy(nationA, nationBId, pos) {
+                const nationB = this.nationLookup.get(nationBId);
+                if (!nationB || nationB.isDead || nationB.isCollapsing) return;
+
+                let data = nationA.diplomacy.get(nationBId);
+                if (!data) {
+                    const roll = Math.random();
+                    const status = roll < 0.7 ? 'war' : (roll < 0.9 ? 'neutral' : 'alliance');
+                    const timer = status === 'war' ? 100 : 50;
+                    data = { status, timer };
+                    nationA.diplomacy.set(nationBId, data);
+                    nationB.diplomacy.set(nationA.id, { status, timer });
+                }
+
+                if (data.status === 'war') {
+                    const sizeRatio = nationA.size / (nationA.size + nationB.size);
+                    const conquestChance = 0.1 + (sizeRatio * 0.4);
+                    if (Math.random() < conquestChance) {
+                        const isCapital = pos.x === nationB.capital.x && pos.y === nationB.capital.y;
+                        if (isCapital) {
+                            this.initiateWaveCapture(nationA, nationB, pos);
+                        } else {
+                            this.grid[pos.y][pos.x] = nationA.id;
+                            nationA.size++;
+                            nationB.size--;
+                            nationA.frontier.push({ x: pos.x, y: pos.y });
+                            if (nationB.size <= 0) {
+                                nationB.isDead = true;
+                                this.nationLookup.delete(nationB.id);
+                            }
+                        }
+                        if (Math.random() < 0.4) this.warPixels.push(pos);
+                    }
+                }
+            }
+
+            updateLeaderboard() {
+                if (this.frame % 60 === 0) {
+                    this.nations = this.nations.filter(n => !n.isDead || (n.isCollapsing && this.activeWaves.some(w => w.victimId === n.id)));
+                }
+                if (this.frame % 15 !== 0) return;
+
+                this.nations.forEach(n => {
+                    n.capitalPopulation = Math.max(1, Math.floor(Math.sqrt(Math.max(1, n.size)) * 1200));
+                });
+
+                const sorted = [...this.nations]
+                    .filter(n => !n.isDead || n.isCollapsing)
+                    .sort((a, b) => b.size - a.size)
+                    .slice(0, 15);
+
+                const list = document.getElementById('leaderboard-list');
+                list.innerHTML = sorted.map(n => `
+                    <div class="nation-entry" style="color: ${n.colorHsl}">
+                        <span>${n.name}</span>
+                        <span>${Math.max(0, Math.floor(n.size))}</span>
+                    </div>
+                `).join('');
+
+                const capSorted = [...this.nations]
+                    .filter(n => !n.isDead || n.isCollapsing)
+                    .sort((a, b) => b.capitalPopulation - a.capitalPopulation)
+                    .slice(0, 15);
+
+                const capList = document.getElementById('capital-list');
+                if (capList) {
+                    capList.innerHTML = capSorted.map(n => `
+                        <div class="capital-entry" style="color: ${n.colorHsl}">
+                            <span>${n.capitalName} (${n.name})</span>
+                            <span>${n.capitalPopulation}</span>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            draw() {
+                const imageData = this.ctx.createImageData(this.cols, this.rows);
+                const data = imageData.data;
+                for (let y = 0; y < this.rows; y++) {
+                    const rowOffset = y * this.cols;
+                    for (let x = 0; x < this.cols; x++) {
+                        const val = this.grid[y][x];
+                        const idx = (rowOffset + x) * 4;
+                        if (val === -1) {
+                            data[idx] = 12; data[idx+1] = 25; data[idx+2] = 45; data[idx+3] = 255;
+                        } else if (val === 0) {
+                            data[idx] = 40; data[idx+1] = 75; data[idx+2] = 40; data[idx+3] = 255;
+                        } else {
+                            const nation = this.nationLookup.get(val);
+                            if (nation) {
+                                data[idx] = nation.rgb.r;
+                                data[idx+1] = nation.rgb.g;
+                                data[idx+2] = nation.rgb.b;
+                                data[idx+3] = 255;
+                            } else {
+                                data[idx] = 40; data[idx+1] = 75; data[idx+2] = 40; data[idx+3] = 255;
+                            }
+                        }
+                    }
+                }
+                this.ctx.putImageData(imageData, 0, 0);
+
+                this.nations.forEach(n => {
+                    if (n.isDead && !n.isCollapsing) return;
+                    if (n.isGoldenAge && Math.floor(this.frame / 5) % 2 === 0) {
+                        this.ctx.strokeStyle = 'white';
+                        this.ctx.lineWidth = 0.5;
+                        this.ctx.strokeRect(n.capital.x - 2, n.capital.y - 2, 5, 5);
+                    }
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.fillRect(n.capital.x - 0.5, n.capital.y - 0.5, 2, 2);
+                    const pop = Math.max(1, Math.floor(Math.sqrt(Math.max(1, n.size))));
+                    if (pop > 6) {
+                        this.ctx.strokeStyle = `rgba(255,255,255,${Math.min(0.18, pop/200)})`;
+                        this.ctx.lineWidth = 0.3;
+                        this.ctx.beginPath();
+                        this.ctx.arc(n.capital.x, n.capital.y, Math.min(6, pop/3), 0, Math.PI*2);
+                        this.ctx.stroke();
+                    }
+                });
+
+                this.meteors.forEach(m => {
+                    this.ctx.strokeStyle = 'rgba(255, 68, 0, 0.8)';
+                    this.ctx.lineWidth = 1;
+                    this.ctx.beginPath();
+                    const pulse = 1 + Math.sin(this.frame * 0.2) * 0.2;
+                    this.ctx.arc(m.x, m.y, m.radius * pulse, 0, Math.PI * 2);
+                    this.ctx.stroke();
+                    this.ctx.fillStyle = '#ff4400';
+                    this.ctx.fillRect(m.x-1, m.y-1, 2, 2);
+                });
+
+                if (Math.floor(this.frame / 3) % 2 === 0) {
+                    this.ctx.fillStyle = '#fff000';
+                    for (const p of this.warPixels) {
+                        this.ctx.fillRect(p.x, p.y, 1, 1);
+                    }
+                }
+            }
+
+            resetAllNations() {
+                this.nations = [];
+                this.nationLookup.clear();
+                this.nextNationId = 1;
+                this.warPixels = [];
+                this.activeWaves = [];
+                this.meteors = [];
+                this.history = [];
+                const list = document.getElementById('news-list');
+                if (list) list.innerHTML = '';
+                const lb = document.getElementById('leaderboard-list');
+                if (lb) lb.innerHTML = '';
+                const capList = document.getElementById('capital-list');
+                if (capList) capList.innerHTML = '';
+                for (let y = 0; y < this.rows; y++) {
+                    for (let x = 0; x < this.cols; x++) {
+                        if (this.grid[y][x] > 0) this.grid[y][x] = 0;
+                    }
+                }
+                this.logNews("🔄 世界重置：所有国家已清除。", "#ffffff", true);
+            }
+
+            animate() {
+                if (!this.mapLoaded) {
+                    requestAnimationFrame(() => this.animate());
+                    return;
+                }
+                if (!this.simulationPaused) {
+                    for (let i = 0; i < this.simulationSpeed; i++) {
+                        this.frame++;
+                        this.update();
+                    }
+                }
+                this.draw();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        window.sim = new Simulation();
+    </script>
+</body>
+</html>

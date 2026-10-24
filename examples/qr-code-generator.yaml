@@ -1,0 +1,11 @@
+id: qr-code-generator
+title: 二维码生成器
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：自定义二维码生成器
+  - 目标：从文本或网址生成二维码
+  - 功能：颜色自定义、下载 PNG
+  - UI 应极简，带有大尺寸预览
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/qr-code-generator.png
+tags:
+  - 工具

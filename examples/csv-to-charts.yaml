@@ -1,0 +1,11 @@
+id: csv-to-charts
+title: CSV 转图表
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：数据可视化游乐场
+  - 目标：上传 CSV 并生成图表
+  - 功能：图表类型选择器、颜色自定义、保存为图片
+  - UI 应现代化，以图表为中心
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/csv-to-charts.png
+tags:
+  - 工具

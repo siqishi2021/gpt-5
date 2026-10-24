@@ -1,0 +1,9 @@
+id: website_template_1
+title: 暗黑高奢风格
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  以极简现代风为核心，采用高对比度黑白主色调+低饱和暖橙点缀，字体组合兼具几何感与随性张力，配合利落的区块分割与轻量科技感装饰元素，打造年轻、前卫的时尚零售氛围。适用于潮牌服饰、青年时尚类电商平台。
+screenshot_url: /website_template_1.png
+tags:
+  - website
+  - 中文版

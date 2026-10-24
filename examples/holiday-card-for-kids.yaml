@@ -1,0 +1,11 @@
+id: holiday-card-for-kids
+title: 儿童节日贺卡
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，展示一张温暖有趣的节日贺卡！贺卡应具有互动性，适合儿童玩耍！
+  - 提供多种可供儿童拖放到界面中的物品；默认应已放置几个
+  - 还要有有趣的音效互动
+  - 尽可能放置更多可爱有趣的元素
+  - 应恰当使用雪花飘落等动画效果
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/holiday-card-for-kids.png
+tags:
+  - 互动

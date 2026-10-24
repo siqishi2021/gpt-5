@@ -1,0 +1,9 @@
+id: website_template_5
+title: 红棕人文公益风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  暖棕色调铺底，规整分块排版+醒目数据卡片，图文结合传递公益项目温度，适配公益项目推广或工具类产品的功能介绍页面。
+screenshot_url: /website_template_5.png
+tags:
+  - website
+  - 中文版

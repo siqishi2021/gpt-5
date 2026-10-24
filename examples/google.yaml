@@ -1,0 +1,9 @@
+id: google
+title: 谷歌搜索
+prompt: |
+  创建一个 Google 风格的 AI 搜索首页，但用于 AI 工具导航。
+  谷歌 AI 是现在最强的 AI 谷歌搜索  UI 保持 Google 极简风
+screenshot_url: /google.png
+tags:
+  - website
+  - 中文版

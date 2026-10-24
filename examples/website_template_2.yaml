@@ -1,0 +1,9 @@
+id: website_template_2
+title: 橙紫活力风格
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  橙紫高饱和撞色，错落动感排版，融合美食特写与用户自拍，风格新潮年轻化，适配美食社交平台，视觉吸睛有活力。
+screenshot_url: /website_template_2.png
+tags:
+  - website
+  - 中文版

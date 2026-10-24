@@ -1,0 +1,11 @@
+id: ocean-wave-simulation-5.2
+title: 海浪模拟
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：海浪模拟
+  - 目标：显示逼真的动态波浪
+  - 功能：改变风速、浪高、光照
+  - UI 应平静且逼真
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/ocean-wave-simulation-5.2.png
+tags:
+  - 互动

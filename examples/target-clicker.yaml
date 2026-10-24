@@ -1,0 +1,10 @@
+id: target-clicker
+title: 目标点击挑战
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，用于目标点击挑战游戏：
+  - 随机目标在屏幕各处短暂出现 — 点击它们得分
+  - 游戏持续 20 秒；结束时显示分数和准确率
+  - 使用彩色动画目标和现代化的记分牌叠加层。背景应为浅色
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/target-clicker.png
+tags:
+  - 游戏

@@ -1,0 +1,12 @@
+id: escape-the-maze
+title: 逃离迷宫
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：逃离迷宫
+  - 目标：在随机生成的迷宫中从起点导航到终点
+  - 功能：方向键控制、计时器、最短路径奖励、重玩按钮
+  - UI 应清晰，迷宫墙壁可见，有一个可移动的角色
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/escape-the-maze.png
+tags:
+  - 游戏
+

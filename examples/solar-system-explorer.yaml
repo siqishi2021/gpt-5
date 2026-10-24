@@ -1,0 +1,11 @@
+id: solar-system-explorer
+title: 太阳系探索者
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：太阳系探索者
+  - 目标：可视化行星绕太阳公转
+  - 功能：点击行星查看信息、轨道速度控制、拖拽旋转、放大/缩小
+  - UI 应为深色主题且可交互
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/solar-system-explorer.png
+tags:
+  - 互动

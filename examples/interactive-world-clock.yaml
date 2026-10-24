@@ -1,0 +1,11 @@
+id: interactive-world-clock
+title: 互动世界时钟
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：互动世界时钟
+  - 目标：显示多个城市的当前时间
+  - 功能：添加/删除城市、12/24 小时制切换
+  - UI 应以时间为中心；每个城市应使用颜色和图标反映上午/下午/傍晚/夜晚的时间段
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/interactive-world-clock.png
+tags:
+  - 实用工具

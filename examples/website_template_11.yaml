@@ -1,0 +1,9 @@
+id: website_template_11
+title: 暖棕艺术风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  以暖棕+浅白铺就雅致复古基调，融入雕塑、建筑场景强化文化质感；错落模块 + 数据卡片排版层次清晰，适配博物馆展陈、品牌形象类页面，简约高级又贴合文化调性
+screenshot_url: /website_template_11.png
+tags:
+  - website
+  - 中文版

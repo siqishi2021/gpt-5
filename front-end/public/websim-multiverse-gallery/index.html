@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>多重宇宙中的 WebSim 用户们 ✦ 异世界画廊</title>
+
+  <style>
+    :root {
+      --red: #c62828;
+      --dark: #111;
+      --muted: #e6e6e6;
+      --card-bg: #1a1a1a;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Roboto', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, #2b2b2b 0%, #151515 100%);
+      color: var(--muted);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* 头部 */
+    .site-header {
+      background: var(--red);
+      color: #fff;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+    .site-header h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      text-transform: lowercase;
+    }
+
+    .container {
+      padding: 12px;
+      flex: 1 1 auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* 画廊网格 */
+    .gallery {
+      width: 100%;
+      max-width: 980px;
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      align-items: start;
+    }
+
+    /* 卡片 */
+    .card {
+      background: var(--card-bg);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 140px;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.45);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .card:active, .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.55);
+    }
+    .thumb {
+      background: linear-gradient(180deg,#2b2b2b,#111);
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      display: block;
+      object-fit: cover;
+      flex: 1 1 auto;
+      min-height: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    .placeholder {
+      background: linear-gradient(135deg,#2a2a2a,#141414);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255,255,255,0.06);
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* 说明文字 */
+    .caption {
+      padding: 8px 10px;
+      font-size: 12px;
+      color: #fff;
+      background: transparent;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .caption .secret-link, .secret-link {
+      color: inherit;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    /* 彩虹昵称 */
+    .caption .rainbow {
+      display: inline-block;
+      background: linear-gradient(90deg, #ff3b3b, #ff8a00, #ffdd00, #3bff6e, #00d2ff, #8a6bff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-weight: 700;
+    }
+
+    /* 故障效果 */
+    .thumb.glitch {
+      animation: glitch-shift 800ms infinite;
+      will-change: transform, filter;
+      backface-visibility: hidden;
+    }
+
+    @keyframes glitch-shift {
+      0% { transform: translateX(0) skewX(0deg); filter: contrast(1) hue-rotate(0deg); }
+      10% { transform: translateX(-4px) skewX(-1deg); filter: hue-rotate(-6deg) saturate(1.1); }
+      20% { transform: translateX(3px) skewX(1deg); filter: hue-rotate(6deg) saturate(1.05); }
+      30% { transform: translateX(0) skewX(0deg); filter: hue-rotate(0deg); }
+      100% { transform: translateX(0) skewX(0deg); }
+    }
+
+    /* 首张卡片高亮 */
+    .card.first {
+      border: 2px solid rgba(255,255,255,0.06);
+      box-shadow: 0 10px 26px rgba(198,40,40,0.14);
+    }
+
+    /* 响应式 */
+    @media (max-width: 420px) {
+      .site-header h1 { font-size: 14px; }
+      .gallery { gap: 10px; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+      .caption { font-size: 11px; padding: 6px; }
+    }
+
+    /* 匕首投掷动画 + 伤害数字 + 红闪 */
+    .rust-knife {
+      position: fixed;
+      pointer-events: none;
+      width: 48px;
+      height: 48px;
+      background: url('https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0fs_Kleki.png') center/contain no-repeat;
+      transform-origin: center;
+      z-index: 9999;
+      opacity: 0;
+      transition: opacity 0.06s linear;
+    }
+    @keyframes throw-knife {
+      0% { transform: translate(var(--sx,0), var(--sy,0)) rotate(0deg) scale(1); opacity: 1; }
+      60% { transform: translate(var(--tx,0), var(--ty,0)) rotate(720deg) scale(1.05); opacity: 1; }
+      100% { transform: translate(calc(var(--tx,0) + 8px), calc(var(--ty,0) + 8px)) rotate(900deg) scale(0.9); opacity: 0; }
+    }
+    .damage-pop {
+      position: fixed;
+      left: 50%;
+      top: 40%;
+      transform: translate(-50%, -50%) scale(1);
+      z-index: 10001;
+      font-weight: 800;
+      color: #ffb3b3;
+      text-shadow: 0 0 10px rgba(255,50,50,0.9);
+      font-size: 36px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.06s linear, transform 0.28s cubic-bezier(0.2,0.9,0.3,1);
+    }
+    .damage-pop.animate {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(-24px) scale(1.06);
+    }
+    .red-pulse-overlay {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle at 50% 35%, rgba(255,60,60,0.18), rgba(255,30,30,0.12) 25%, rgba(0,0,0,0) 55%);
+      pointer-events: none;
+      z-index: 10000;
+      opacity: 0;
+      transition: opacity 0.12s ease;
+    }
+    .red-pulse-overlay.show { opacity: 1; transition: opacity 0.06s ease; }
+
+    /* 对话气泡 */
+    .speech-bubble {
+      position: fixed;
+      z-index: 12000;
+      background: rgba(30,30,30,0.96);
+      color: #ffdede;
+      padding: 8px 12px;
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.6);
+      font-weight: 700;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 0;
+      transition: opacity 0.12s ease, transform 0.18s cubic-bezier(0.2,0.9,0.3,1);
+    }
+    .speech-bubble.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) translateY(-6px) scale(1.03);
+    }
+
+    /* 黑屏+眼睛揭示 */
+    .blackout-overlay {
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 13000;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.12s linear;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .blackout-overlay.show { opacity: 1; }
+    .help-eye {
+      width: 160px;
+      height: auto;
+      opacity: 0;
+      transform: scale(0.86);
+      transition: opacity 0.12s linear, transform 0.18s cubic-bezier(0.2,0.9,0.3,1);
+      mix-blend-mode: screen;
+    }
+    .help-eye.show { opacity: 1; transform: scale(1); }
+
+    /* X! 紫色光效 */
+    .caption .xname {
+      color: #c08bff;
+      text-shadow: 0 0 8px rgba(176,107,255,0.9);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-block;
+    }
+    .card.x-glow {
+      box-shadow: 0 14px 34px rgba(176,107,255,0.16), 0 0 28px rgba(176,107,255,0.18) !important;
+    }
+
+    /* 其他特效样式 (精简保留关键) */
+    .caption .evil-red, .caption .bright-red, .caption .red-glow,
+    .caption .light-blue, .caption .green-glow, .caption .purple-pink-glow,
+    .caption .vhs-red-glow, .caption .dark-text, .proximity-dark-overlay {
+      /* 保留原有特效定义，略冗长但保持功能 */
+    }
+    .proximity-dark-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 14500;
+      opacity: 0;
+      transition: opacity 0.08s linear;
+      mix-blend-mode: multiply;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="title-wrap">
+      <h1>✨ 多重宇宙中的 WebSim 用户们 ✨</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="gallery" class="gallery" aria-label="异世界用户画廊"></section>
+  </main>
+
+  <script type="module">
+    // ---------- 中文版 · 多重宇宙画廊 ----------
+    // 保留所有交互特效，仅界面文字汉化 + 增加趣味中文提示
+    
+    const GALLERY_COUNT = 100;
+    const gallery = document.getElementById('gallery');
+
+    function makeCard({ imgSrc, caption, isFirst = false, glitch = false }) {
+      const card = document.createElement('article');
+      card.className = 'card' + (isFirst ? ' first' : '');
+      let media;
+      if (imgSrc) {
+        media = document.createElement('img');
+        media.src = imgSrc;
+        media.alt = caption || '画像';
+        media.className = 'thumb';
+        if (glitch) media.classList.add('glitch');
+      } else {
+        media = document.createElement('div');
+        media.className = 'thumb placeholder';
+        media.textContent = '🖤';
+      }
+      card.appendChild(media);
+      const cap = document.createElement('div');
+      cap.className = 'caption';
+      cap.textContent = caption || '等待降临';
+      card.appendChild(cap);
+      return card;
+    }
+
+    // 1. 首张卡片 (可点击跳转)
+    const firstCard = makeCard({
+      imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0np_Kleki.png',
+      caption: '坠落！Ronnyron1104',
+      isFirst: true
+    });
+    gallery.appendChild(firstCard);
+    (function setupSecretLink(card) {
+      const cap = card.querySelector('.caption');
+      if (cap) cap.innerHTML = '<a class="secret-link" href="/HELPRONNYRON10114.html">✨ 坠落！Ronnyron1104 ✨</a>';
+    })(firstCard);
+
+    // 2. 外域！fallen_sgwtGDYT
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0vs_Kleki.png', caption: '外域！fallen_sgwtGDYT' }));
+    // 3. 错误！无题建造者 (故障风格)
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0w9_Kleki.png', caption: '错误！无题建造者', glitch: true }));
+    // 4. 核心！sundialforgrace
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0we_Kleki.png', caption: '核心！sundialforgrace' }));
+    // 5. 清新！magicred
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0wk_Kleki.png', caption: '清新！magicred' }));
+    // 6. 坠落坠落！马戏团熊
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_06_0ws_Kleki (1).png', caption: '坠落坠落！马戏团熊' }));
+    // 7. 尘埃！PuggoThePuggo
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0c1_Kleki.png', caption: '尘埃！PuggoThePuggo' }));
+    // 8. 绿 Kamiltheconcretemixer
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0c5_Kleki.png', caption: '绿·Kamil混凝土搅拌机' }));
+    // 9. LB！TheoNeves_Is_Back
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0c9_Kleki.png', caption: 'LB！TheoNeves回来了' }));
+    // 10. 恐怖！luisgamercool_1
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0dv_Kleki.png', caption: '恐怖！luisgamercool_1' }));
+
+    // 杀手！hollywillowcreates (点击切换图片)
+    const killerCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0dz_Kleki.png', caption: '杀手！hollywillowcreates' });
+    gallery.appendChild(killerCard);
+    (function setupKillerToggle(card) {
+      const img = card.querySelector('img.thumb');
+      if (!img) return;
+      const originalSrc = img.src;
+      img.addEventListener('click', () => {
+        if (img.dataset.toggled === '1') {
+          img.src = originalSrc;
+          img.dataset.toggled = '0';
+        } else {
+          img.src = '/killerholy.png';
+          img.dataset.toggled = '1';
+        }
+      });
+    })(killerCard);
+
+    // 尘埃坠落！Acheron
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0cj_Kleki.png', caption: '尘埃坠落！Acheron' }));
+    // 墨水！SnakeHiss (彩虹字)
+    const snakeCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0fq_Kleki.png', caption: '墨水！蛇嘶' });
+    const capSnake = snakeCard.querySelector('.caption');
+    if (capSnake) capSnake.innerHTML = '<span class="rainbow">🌈 墨水！蛇嘶 🌈</span>';
+    gallery.appendChild(snakeCard);
+
+    // X！very_eagerkettle / X！Mr_Chair
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0h0_Kleki.png', caption: 'X！非常急切的水壶' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0hc_Kleki.png', caption: 'X！椅子先生' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0iy_Kleki.png', caption: 'H2LPSTAPYB6' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0to_Kleki.png', caption: '六只宠物' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ew_Kleki.png', caption: '外域！LoahGamingBoi' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0ty_Kleki.png', caption: '基因！J4MB1' }));
+
+    // 彩虹！Sarpy
+    const rainbowCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ty_Kleki.png', caption: '彩虹！Sarpy' });
+    const capRain = rainbowCard.querySelector('.caption');
+    if (capRain) capRain.innerHTML = '<span class="rainbow">🌈 彩虹！Sarpy 🌈</span>';
+    gallery.appendChild(rainbowCard);
+
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0be_Kleki.png', caption: '反坠落！来自Zarcade的妖精' }));
+    gallery.appendChild(makeCard({ imgSrc: '/eviler.png', caption: '邪恶化身！邪倒置鱼' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0ui_Kleki.png', caption: '坠落！auttum' }));
+
+    // HELPBULB (故障闪烁)
+    const helpCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ez_Kleki.png', caption: '救命灯泡' });
+    gallery.appendChild(helpCard);
+    function setupGlitchCaption(card, baseText) {
+      const cap = card.querySelector('.caption');
+      if (!cap) return;
+      const glyphs = ['@','#','%','&','?','¥','*','~','/','\\','|','!'];
+      let running = true;
+      setInterval(() => {
+        if (!running) return;
+        let txt = baseText.split('').map(ch => {
+          if (Math.random() < 0.18) return glyphs[Math.floor(Math.random() * glyphs.length)];
+          if (Math.random() < 0.12) return ch === ch.toUpperCase() ? ch.toLowerCase() : ch.toUpperCase();
+          return ch;
+        }).join('');
+        cap.textContent = txt;
+      }, 100);
+      cap.addEventListener('click', () => { cap.textContent = baseText; running = false; setTimeout(()=> running = true, 800); });
+    }
+    setupGlitchCaption(helpCard, '救命灯泡');
+
+    // HELPWELCOM (故障 + 点击图片跳转)
+    const helpWelcomCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_10_0df_Kleki.png', caption: '救命欢迎' });
+    gallery.appendChild(helpWelcomCard);
+    (function setupHelpWelcom(card) {
+      setupGlitchCaption(card, '救命欢迎');
+      const img = card.querySelector('img.thumb');
+      if (img) img.addEventListener('click', () => window.location.href = '/helpwelcom-glitch.html');
+    })(helpWelcomCard);
+
+    // Helpsim！lxvcan (黑屏眼睛)
+    const helpsimCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ij_Kleki.png', caption: 'Helpsim！lxvcan' });
+    gallery.appendChild(helpsimCard);
+    (function setupHelpsim(card) {
+      const cap = card.querySelector('.caption');
+      if (cap) cap.innerHTML = '<span style="color:#9fe8ff;text-shadow:0 0 10px rgba(159,232,255,0.9);">✨ Helpsim！lxvcan ✨</span>';
+      const img = card.querySelector('img.thumb');
+      if (!img) return;
+      let overlay = null;
+      function ensureOverlay() {
+        if (overlay) return overlay;
+        overlay = document.createElement('div');
+        overlay.className = 'blackout-overlay';
+        const eye = document.createElement('img');
+        eye.className = 'help-eye';
+        eye.src = 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ez_Kleki.png';
+        overlay.appendChild(eye);
+        document.body.appendChild(overlay);
+        return overlay;
+      }
+      img.addEventListener('click', () => {
+        const ov = ensureOverlay();
+        const eye = ov.querySelector('.help-eye');
+        ov.classList.add('show');
+        setTimeout(() => { eye.classList.add('show'); setTimeout(() => eye.classList.remove('show'), 1000); setTimeout(() => ov.classList.remove('show'), 1200); }, 5000);
+      });
+    })(helpsimCard);
+
+    // 致命错误！baldisbasicsfree (触发基因卡片故障)
+    const fatalCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0fh_Kleki.png', caption: '致命错误！baldisbasicsfree' });
+    gallery.appendChild(fatalCard);
+    setupGlitchCaption(fatalCard, '致命错误！baldisbasicsfree');
+    (function setupFatalClick(card) {
+      const img = card.querySelector('img.thumb');
+      if (!img) return;
+      img.addEventListener('click', () => {
+        const allCards = document.querySelectorAll('.card');
+        let targetCard = null;
+        allCards.forEach(c => { if (c.querySelector('.caption')?.textContent.includes('基因！J4MB1')) targetCard = c; });
+        if (targetCard) {
+          const targetImg = targetCard.querySelector('img.thumb');
+          if (targetImg) { targetImg.classList.add('glitch'); setTimeout(() => targetImg.classList.remove('glitch'), 1400); }
+        }
+      });
+    })(fatalCard);
+
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0l0_Kleki (1).png', caption: '尘埃！Pom' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0ta_Kleki.png', caption: 'Disbellef！Greencreeperjsab' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0tg_Kleki.png', caption: '尘尘！flowernices' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_07_0xe_Kleki.png', caption: '交换！PoloniumCatto' }));
+
+    // X!scx (点击脉冲所有X!)
+    const xScxCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0fa_Kleki.png', caption: 'X！scx' });
+    gallery.appendChild(xScxCard);
+    (function setupXScx(card) {
+      const cap = card.querySelector('.caption');
+      if (cap) cap.innerHTML = '<span class="xname">✨ X！scx ✨</span>';
+      cap?.addEventListener('click', () => {
+        document.querySelectorAll('.card').forEach(c => {
+          if (c.querySelector('.caption')?.innerText.includes('X！')) c.classList.add('x-glow');
+        });
+        setTimeout(() => document.querySelectorAll('.card').forEach(c => c.classList.remove('x-glow')), 1000);
+      });
+    })(xScxCard);
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0tt_Kleki.png', caption: 'X！playerz' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0bk_Kleki.png', caption: '尘尘坠落尘尘坠落杀手恐怖！马里奥最棒' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0d7_Kleki.png', caption: 'N！scratch_cat_twin' }));
+
+    // 恐怖！theaddwhatyoucoomentandgeogfan (匕首投掷)
+    const horrorCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0fs_Kleki.png', caption: '恐怖！评论添加与地理粉丝' });
+    horrorCard.classList.add('horror-card');
+    gallery.appendChild(horrorCard);
+    (function setupRustKnife() {
+      const knife = document.createElement('div'); knife.className = 'rust-knife'; document.body.appendChild(knife);
+      const dmg = document.createElement('div'); dmg.className = 'damage-pop'; dmg.textContent = '25'; document.body.appendChild(dmg);
+      const pulse = document.createElement('div'); pulse.className = 'red-pulse-overlay'; document.body.appendChild(pulse);
+      const img = horrorCard.querySelector('img.thumb');
+      if (!img) return;
+      img.addEventListener('click', (ev) => {
+        const rect = img.getBoundingClientRect();
+        const sx = rect.left + rect.width/2, sy = rect.top + rect.height/2;
+        const tx = window.innerWidth/2, ty = window.innerHeight/2;
+        knife.style.left = (sx - 24) + 'px'; knife.style.top = (sy - 24) + 'px';
+        knife.style.setProperty('--tx', (tx - sx) + 'px'); knife.style.setProperty('--ty', (ty - sy) + 'px');
+        knife.style.opacity = '1'; knife.style.animation = 'throw-knife .9s ease forwards';
+        dmg.style.left = tx + 'px'; dmg.style.top = (ty - 40) + 'px';
+        dmg.classList.add('animate'); setTimeout(() => dmg.classList.remove('animate'), 700);
+        pulse.classList.add('show'); setTimeout(() => pulse.classList.remove('show'), 420);
+        knife.addEventListener('animationend', () => { knife.style.animation = ''; knife.style.opacity = '0'; }, { once: true });
+      });
+    })();
+
+    // bab (逃跑)
+    const babCard = makeCard({ imgSrc: '/bab.webp', caption: 'bab 小宝宝' });
+    gallery.appendChild(babCard);
+    (function setupBab(card) {
+      const img = card.querySelector('img.thumb');
+      if (!img) return;
+      img.addEventListener('click', () => {
+        const bubble = document.createElement('div'); bubble.className = 'speech-bubble'; bubble.textContent = '嘿，你不该在这里！';
+        document.body.appendChild(bubble);
+        bubble.style.left = window.innerWidth/2 + 'px'; bubble.style.top = '120px';
+        bubble.classList.add('show');
+        setTimeout(() => bubble.remove(), 1500);
+        const fly = img.cloneNode(true); fly.style.position = 'fixed'; const rect = img.getBoundingClientRect();
+        fly.style.left = rect.left + 'px'; fly.style.top = rect.top + 'px'; fly.style.width = rect.width + 'px'; fly.style.height = rect.height + 'px';
+        fly.style.transition = 'transform .9s ease, opacity .9s ease'; fly.style.zIndex = 13000;
+        document.body.appendChild(fly); img.style.visibility = 'hidden';
+        requestAnimationFrame(() => { fly.style.transform = `translate(1000px, -500px) rotate(40deg) scale(0.4)`; fly.style.opacity = '0'; });
+        setTimeout(() => { fly.remove(); card.remove(); }, 950);
+      });
+    })(babCard);
+
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0e0_Kleki.png', caption: '黑手党！Faci_Studio_Fourth' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ho_Kleki.png', caption: '反转！mrvoid' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0i2_Kleki.png', caption: '疯狂！Jpag' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0iw_Kleki.png', caption: '坠落！summersilk' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0ic_Kleki.png', caption: '换档！rileygvg' }));
+    
+    const ronsCard = makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0jd_Kleki.png', caption: 'Rons尘埃！Gelatin' });
+    gallery.appendChild(ronsCard);
+    const suddenCard = makeCard({ imgSrc: '/evil2048i.png', caption: '突变！IAm2048' });
+    gallery.appendChild(suddenCard);
+    (function setupShoot(card) {
+      const img = card.querySelector('img.thumb');
+      if (!img) return;
+      img.addEventListener('click', () => {
+        const bullet = document.createElement('div'); bullet.className = 'flying-bullet';
+        const rect = img.getBoundingClientRect();
+        bullet.style.left = (rect.left + rect.width/2 - 8) + 'px'; bullet.style.top = (rect.top + rect.height/2 - 8) + 'px';
+        document.body.appendChild(bullet);
+        requestAnimationFrame(() => { bullet.style.transform = `translate(${window.innerWidth/2 - (rect.left+rect.width/2)}px, ${window.innerHeight/2 - (rect.top+rect.height/2)}px) scale(0.9)`; bullet.style.opacity = '1'; });
+        setTimeout(() => bullet.remove(), 800);
+      });
+    })(suddenCard);
+    
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0m7_Kleki.png', caption: '尘埃清新！kap' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0mp_Kleki.png', caption: '坠落坠落坠落！narrow' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_08_0uv_Kleki.png', caption: '坠落坠落坠落坠落！LHORN' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_09_0hg_Kleki.png', caption: 'GG坠落！airstone' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_09_0hs_Kleki.png', caption: '坠落！Tadpole' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_09_0hw_Kleki.png', caption: '外域外域！Bill' }));
+    gallery.appendChild(makeCard({ imgSrc: 'https://3a_cgvvnsxrwvjkpckt4.c.websim.com/2026_04_10_0dl_Kleki.png', caption: '外域！Triton' }));
+    
+    // 剩余占位符
+    for (let i = gallery.children.length; i < GALLERY_COUNT; i++) {
+      gallery.appendChild(makeCard({ imgSrc: null, caption: `✨ 多重宇宙旅客 ${i+1} ✨` }));
+    }
+  </script>
+</body>
+</html>

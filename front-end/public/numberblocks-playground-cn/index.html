@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>数字方块游乐场 · 数字积木</title>
+    <style>
+        /* ===== 字体定义 ===== */
+        @font-face {
+            font-family: 'Learninglings';
+            src: url('Learninglings.ttf') format('truetype');
+        }
+
+        /* ===== 全局样式 ===== */
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #a3e4ff;
+            font-family: 'Learninglings', 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+
+        /* ===== UI 容器 ===== */
+        #ui-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px 10px;
+            pointer-events: none;
+            max-height: 36vh;
+            box-sizing: border-box;
+            overflow: visible;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            width: 100vw;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: 10px;
+            pointer-events: auto;
+            padding: 10px 20px;
+            box-sizing: border-box;
+        }
+
+        .button-row::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .button-row::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+        }
+
+        .button-row::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .spawn-btn {
+            flex: 0 0 44px;
+            width: 44px;
+            height: 44px;
+            border: none;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 4px 0 #ccc;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2rem;
+            transition: transform 0.1s, box-shadow 0.1s;
+            touch-action: manipulation;
+            color: white;
+            text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000;
+        }
+
+        .spawn-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #ccc;
+        }
+
+        #custom-btn {
+            background: #9c27b0;
+            min-width: 66px;
+            width: auto;
+            padding: 0 10px;
+            font-size: 0.95rem;
+        }
+
+        .control-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            pointer-events: auto;
+        }
+
+        #arrangement-menu {
+            display: flex;
+            background: rgba(255, 255, 255, 0.4);
+            padding: 4px;
+            border-radius: 25px;
+            gap: 4px;
+        }
+
+        .arr-btn {
+            border: none;
+            background: transparent;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .arr-btn.active {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        #shape-shift-btn, #explode-btn, #rotate-btn, #clone-btn {
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #e65100;
+        }
+
+        #shape-shift-btn { background: #ff9800; }
+        #shape-shift-btn.active { background: #ffffff; color: #ff9800; box-shadow: 0 0 10px #ff9800; transform: scale(1.05); }
+
+        #explode-btn { background: #f44336; box-shadow: 0 4px 0 #b71c1c; }
+        #explode-btn.active { background: #ffffff; color: #f44336; box-shadow: 0 0 10px #f44336; transform: scale(1.05); }
+
+        #rotate-btn { background: #4caf50; box-shadow: 0 4px 0 #2e7d32; }
+        #rotate-btn.active { background: #ffffff; color: #4caf50; box-shadow: 0 0 10px #4caf50; transform: scale(1.05); }
+
+        #clone-btn { background: #2196f3; box-shadow: 0 4px 0 #1565c0; }
+        #clone-btn.active { background: #ffffff; color: #2196f3; box-shadow: 0 0 10px #2196f3; transform: scale(1.05); }
+
+        #colorbox-btn { background: #e91e63; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #ad1457; }
+        #blackbox-btn { background: #212121; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #000000; }
+        #grid-btn { background: #607d8b; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #455a64; }
+        #grid-btn.active { background: #ffffff; color: #607d8b; box-shadow: 0 0 10px #607d8b; }
+
+        #time-btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #2e7d32;
+            min-width: 100px;
+        }
+        #time-btn.active { background: #2196f3; box-shadow: 0 4px 0 #1565c0; }
+
+        #reset-cam-btn { background: #9c27b0; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 0 #7b1fa2; }
+        #reset-cam-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #7b1fa2; }
+
+        #clear-btn {
+            background: #ff5555;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            height: 36px;
+            line-height: 24px;
+            border-radius: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #990000;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 84px;
+        }
+        #clear-btn:active { transform: translateY(1px); box-shadow: 0 1px 0 #990000; }
+
+        #music-panel {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+        }
+
+        #music-btn {
+            background: #1976d2;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            box-shadow: 0 4px 0 #0d47a1;
+            font-weight: 700;
+            cursor: pointer;
+            pointer-events: auto;
+            min-width: 88px;
+            height: 38px;
+        }
+        #music-btn.active { background: #ef5350; box-shadow: 0 4px 0 #b71c1c; }
+
+        #now-playing {
+            min-width: 160px;
+            pointer-events: none;
+            user-select: none;
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            color: #000;
+            font-weight: 700;
+            font-size: 13px;
+            background: rgba(255,255,255,0.7);
+            padding: 6px 10px;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        #volume-control {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-left: 6px;
+            pointer-events: auto;
+        }
+
+        #volume-slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            width: 140px;
+            background: linear-gradient(90deg, #4caf50, #2196f3);
+            border-radius: 8px;
+            outline: none;
+        }
+        #volume-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 2px solid rgba(0,0,0,0.12);
+            cursor: pointer;
+        }
+
+        #music-seek-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            margin-left: 6px;
+            min-width: 220px;
+            pointer-events: auto;
+            align-items: flex-start;
+        }
+
+        #music-seek {
+            width: 220px;
+        }
+
+        #music-time {
+            font-size: 11px;
+            font-weight: 700;
+            color: #222;
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* ===== HUD 元素 ===== */
+        #height-indicator {
+            position: fixed;
+            right: 14px;
+            top: 74px;
+            z-index: 10000;
+            background: rgba(255,255,255,0.85);
+            color: #000;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            font-size: 13px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.12);
+            pointer-events: none;
+            user-select: none;
+            min-width: 150px;
+            text-align: center;
+        }
+
+        #fps-counter {
+            position: fixed;
+            right: 14px;
+            top: 114px;
+            z-index: 10000;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            font-size: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.18);
+            pointer-events: none;
+            user-select: none;
+            min-width: 80px;
+            text-align: center;
+        }
+
+        #watermark {
+            position: fixed;
+            right: 12px;
+            bottom: 8px;
+            z-index: 9999;
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            font-weight: 700;
+            font-size: 12px;
+            color: transparent;
+            background: linear-gradient(90deg, #ff0000, #ff8800, #ffff00, #00bb00, #00ffff, #8800ff, #ff00ff, #ff0000);
+            background-size: 300% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            animation: watermark-rainbow 6s linear infinite, watermark-fly 6.5s ease-in-out infinite;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+            padding: 6px 10px;
+            border-radius: 10px;
+            pointer-events: none;
+            user-select: none;
+            -webkit-text-fill-color: transparent;
+            will-change: transform, opacity;
+        }
+
+        #watermark::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background: rgba(255,255,255,0.35);
+            border-radius: 10px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        @keyframes watermark-rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes watermark-fly {
+            0% { transform: translate3d(0, 0, 0) rotate(-2deg) scale(1); opacity: 0.95; }
+            25% { transform: translate3d(-6px, -6px, 0) rotate(1.5deg) scale(1.02); opacity: 1; }
+            50% { transform: translate3d(-12px, -10px, 0) rotate(0.5deg) scale(1.03); opacity: 0.98; }
+            75% { transform: translate3d(-6px, -6px, 0) rotate(-1deg) scale(1.01); opacity: 1; }
+            100% { transform: translate3d(0, 0, 0) rotate(-2deg) scale(1); opacity: 0.95; }
+        }
+
+        /* ===== 加载遮罩 ===== */
+        #loading-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 20% 20%, rgba(255,240,180,0.12), transparent 25%),
+                        radial-gradient(circle at 80% 80%, rgba(180,235,255,0.10), transparent 25%),
+                        linear-gradient(180deg, #ffd7a6 0%, #ffb3d9 40%, #fff1a8 100%);
+            z-index: 40000;
+            pointer-events: auto;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+        }
+
+        #loading-overlay.hidden { display: none; }
+
+        .loading-panel {
+            width: min(96vw, 720px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+            border-radius: 28px;
+            padding: 28px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.28), inset 0 -6px 18px rgba(0,0,0,0.04);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .loading-circle {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin: 0 auto 6px;
+            border: 8px solid rgba(255,255,255,0.62);
+            border-top-color: #FFD700;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            animation: loading-spin 900ms linear infinite;
+        }
+
+        @keyframes loading-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            color: #3a1f78;
+            filter: drop-shadow(0 6px 6px rgba(0,0,0,0.12));
+            margin-top: 12px;
+        }
+
+        .loading-sub {
+            font-size: 1.05rem;
+            color: #5a347d;
+            margin: 0;
+        }
+
+        .play-btn {
+            min-width: 220px;
+            padding: 16px 22px;
+            border-radius: 40px;
+            font-weight: 900;
+            font-size: 1.15rem;
+            background: linear-gradient(180deg, #ff6ea6 0%, #ff3b8f 60%, #ff1f6b 100%);
+            color: #fff;
+            border: 6px solid rgba(255,255,255,0.6);
+            box-shadow: 0 12px 0 #b21852, 0 6px 20px rgba(0,0,0,0.18);
+            cursor: pointer;
+            animation: play-bounce 2000ms ease-in-out infinite;
+        }
+
+        @keyframes play-bounce {
+            0% { transform: translateY(0) scale(1); }
+            40% { transform: translateY(-8px) scale(1.03); }
+            65% { transform: translateY(-4px) scale(1.02); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        .play-btn:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 14px 0 #b21852, 0 10px 26px rgba(0,0,0,0.18); }
+        .play-btn:active { transform: translateY(2px) scale(0.98); box-shadow: 0 6px 0 #882244; }
+        .play-btn:disabled {
+            background: #cccccc !important;
+            color: #6b6b6b !important;
+            box-shadow: none !important;
+            cursor: default !important;
+            animation: none !important;
+            transform: none !important;
+            border-color: rgba(0,0,0,0.08) !important;
+        }
+
+        .loading-hint {
+            font-size: 0.95rem;
+            color: #4a2b63;
+            background: rgba(255,255,255,0.7);
+            padding: 8px 12px;
+            border-radius: 18px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.06);
+            margin-bottom: 6px;
+        }
+
+        /* ===== 提示条 ===== */
+        #suggestion-bar {
+            position: fixed;
+            left: 12px;
+            right: 12px;
+            bottom: 12px;
+            z-index: 60000;
+            pointer-events: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #suggestion-bar.hidden { display: none; }
+
+        #suggestion-inner {
+            width: min(96vw, 980px);
+            background: linear-gradient(90deg, rgba(255,255,255,0.95), rgba(250,250,250,0.95));
+            box-shadow: 0 12px 36px rgba(0,0,0,0.20);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .suggestion-text {
+            font-family: 'Learninglings', 'Microsoft YaHei', sans-serif;
+            font-weight: 800;
+            color: #1b1b1b;
+            font-size: 14px;
+            line-height: 1;
+            flex: 1;
+            text-align: left;
+        }
+
+        #suggestion-close {
+            min-width: 40px;
+            height: 36px;
+            background: #ff6b6b;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 4px 0 #b04242;
+            cursor: pointer;
+            font-weight: 900;
+            font-size: 14px;
+            padding: 0 8px;
+        }
+
+        #suggestion-close:active { transform: translateY(2px); box-shadow: 0 2px 0 #b04242; }
+
+        /* ===== 移动端适配 ===== */
+        @media (max-width: 420px) {
+            .loading-panel { padding: 18px; }
+            .loading-title { font-size: 1.25rem; }
+            .play-btn { min-width: 160px; padding: 12px 16px; font-size: 1rem; }
+            #watermark { font-size: 11px; padding: 5px 8px; right: 8px; bottom: 6px; }
+        }
+    </style>
+    <!-- Matter.js 导入映射 -->
+    <script type="importmap">
+    {
+        "imports": {
+            "matter-js": "https://esm.sh/matter-js@0.19.0"
+        }
+    }
+    </script>
+</head>
+<body>
+    <!-- UI 容器 -->
+    <div id="ui-container">
+        <div class="button-row" id="spawn-buttons">
+            <!-- 按钮由 JS 动态生成 -->
+        </div>
+        <div class="control-row">
+            <div id="arrangement-menu" title="切换积木排列方式">
+                <button class="arr-btn active" data-arr="auto">自动</button>
+                <button class="arr-btn" data-arr="tall">竖排</button>
+                <button class="arr-btn" data-arr="wide">横排</button>
+                <button class="arr-btn" data-arr="step">阶梯</button>
+            </div>
+            <button id="shape-shift-btn">变形模式</button>
+            <button id="explode-btn">爆炸模式</button>
+            <button id="rotate-btn">旋转模式</button>
+            <button id="clone-btn">克隆模式</button>
+            <button id="colorbox-btn">彩色盒子</button>
+            <button id="blackbox-btn">黑盒子</button>
+            <button id="grid-btn">网格模式</button>
+            <button id="time-btn">停止时间</button>
+            <button id="reset-cam-btn">重置视角</button>
+            <button id="clear-btn">全部清除</button>
+
+            <!-- 音乐控制面板 -->
+            <div id="music-panel" title="音乐控制">
+                <button id="music-btn" class="spawn-btn" style="min-width:88px; width:auto; height:38px; font-size:0.9rem;">播放音乐</button>
+                <div id="now-playing" aria-live="polite">正在播放：—</div>
+                <div id="music-seek-container">
+                    <label for="music-seek" style="font-size:11px; font-weight:700;">进度</label>
+                    <input id="music-seek" type="range" min="0" max="1" value="0" step="0.001">
+                    <div id="music-time">0:00 / 0:00</div>
+                </div>
+                <div id="volume-control">
+                    <label for="volume-slider" style="font-size:11px; font-weight:700;">音量</label>
+                    <input id="volume-slider" type="range" min="0" max="200" value="120" step="1">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 画布容器 -->
+    <div id="canvas-container"></div>
+
+    <!-- 加载遮罩 -->
+    <div id="loading-overlay" role="dialog" aria-modal="true" aria-label="加载画面">
+        <div class="loading-panel">
+            <div class="loading-circle" aria-hidden="true"></div>
+            <div class="loading-title">数字方块游乐场</div>
+            <div class="loading-sub">正在加载资源…</div>
+            <button id="play-btn" class="play-btn" aria-label="开始游戏">开始游戏</button>
+            <div id="loading-hint" class="loading-hint">点击「开始游戏」进入</div>
+        </div>
+    </div>
+
+
+
+    <!-- 主程序脚本 -->
+    <script type="module">
+        // ==================== 导入 Matter.js ====================
+        import Matter from 'matter-js';
+        const { Engine, Render, Runner, World, Bodies, Body, Mouse, MouseConstraint, Vector, Events, Query, Bounds } = Matter;
+
+        // ==================== 全局配置 ====================
+        const UNIT_SIZE = 40;
+        const MAX_BLOCKS = 150;
+        
+        // 引擎初始化
+        const engine = Engine.create();
+        engine.positionIterations = 6;
+        engine.velocityIterations = 6;
+        const world = engine.world;
+        
+        const container = document.getElementById('canvas-container');
+        let width = window.innerWidth;
+        let height = window.innerHeight;
+
+        const render = Render.create({
+            element: container,
+            engine: engine,
+            options: {
+                width: width,
+                height: height,
+                wireframes: false,
+                background: 'transparent'
+            }
+        });
+
+        Render.run(render);
+        const runner = Runner.create();
+        Runner.run(runner, engine);
+
+        // 相机状态
+        let camera = { x: 0, y: 0, zoom: 1 };
+        const MIN_ZOOM = 0.0;
+        const MAX_ZOOM = Infinity;
+        
+        function clampZoom(z) {
+            if (isNaN(z)) return MIN_ZOOM;
+            return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, z));
+        }
+
+        function updateMouseTransform() {
+            camera.zoom = clampZoom(camera.zoom);
+            Mouse.setScale(mouse, { x: 1 / camera.zoom, y: 1 / camera.zoom });
+            Mouse.setOffset(mouse, { x: camera.x, y: camera.y });
+        }
+
+        // 物理世界边界（地面）
+        const ground = Bodies.rectangle(0, height + 100, 20000000, 200, { 
+            isStatic: true,
+            friction: 0.5,
+            label: 'ground'
+        });
+        World.add(world, [ground]);
+
+        // 鼠标控制
+        const mouse = Mouse.create(render.canvas);
+        const mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: { stiffness: 0.8, render: { visible: false } }
+        });
+        World.add(world, mouseConstraint);
+
+        // 方块数组
+        let blocks = [];
+        let currentArrangement = 'auto';
+        let activeMode = 'none';
+        let cloneMode = false;
+        let gridMode = false;
+        let isTimeStopped = false;
+        let infiniteZoom = false;
+
+        // ==================== 颜色映射 ====================
+        const colorMap = {
+            1: '#ff0000', 2: '#ff8800', 3: '#ffff00', 4: '#00bb00', 5: '#00ffff',
+            6: '#8800ff', 7: '#d6b4fc', 8: '#ff00ff', 9: '#888888', 10: '#bdbdbd'
+        };
+
+        const letterColors = {
+            'A': '#FF5252', 'B': '#FF4081', 'C': '#E040FB', 'D': '#7C4DFF',
+            'E': '#536DFE', 'F': '#448AFF', 'G': '#40C4FF', 'H': '#18FFFF',
+            'I': '#64FFDA', 'J': '#69F0AE', 'K': '#B2FF59', 'L': '#EEFF41',
+            'M': '#FFFF00', 'N': '#FFD740', 'O': '#FFAB40', 'P': '#FF6E40',
+            'Q': '#D7CCC8', 'R': '#F5F5F5', 'S': '#CFD8DC', 'T': '#FFCDD2',
+            'U': '#F8BBD0', 'V': '#E1BEE7', 'W': '#D1C4E9', 'X': '#C5CAE9',
+            'Y': '#BBDEFB', 'Z': '#B3E5FC'
+        };
+
+        // ==================== 工具函数 ====================
+        function getNumericValue(number) {
+            if (typeof number === 'number') return number;
+            if (typeof number !== 'string') return 0;
+            if (number === 'pi' || number === 'PI') return Math.PI;
+            if (/^[A-Za-z]$/.test(number)) return 1;
+            const p = parseFloat(number);
+            return isNaN(p) ? 0 : p;
+        }
+
+        function escapeHtml(unsafe) {
+            return (unsafe || '').toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;");
+        }
+
+        // ==================== 音频系统 ====================
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioBuffers = {};
+        
+        async function loadSound(name, url) {
+            try {
+                const response = await fetch(url);
+                const arrayBuffer = await response.arrayBuffer();
+                audioBuffers[name] = await audioCtx.decodeAudioData(arrayBuffer);
+            } catch (e) {
+                console.warn(`音效加载失败: ${url}`);
+            }
+        }
+
+        function playSound(name) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            if (!audioBuffers[name]) return;
+            const source = audioCtx.createBufferSource();
+            source.buffer = audioBuffers[name];
+            source.connect(audioCtx.destination);
+            source.start(0);
+        }
+
+        // 加载音效（静默失败，不影响游戏）
+        loadSound('pop', '/Add.wav');
+        loadSound('delete', '/SubractDivide.wav');
+
+        // ==================== 语音系统（模拟） ====================
+        async function speak(number, customText = null, body = null) {
+            // 简化版：只显示气泡，不实际播放 TTS
+            if (body) {
+                let text = customText || String(number);
+                if (number === 67) text = "六十七！！！";
+                body.activeSpeech = text;
+                body.speechExpiry = Date.now() + 2500;
+            }
+        }
+
+        // ==================== 创建数字方块 ====================
+        function createNumberBlock(x, y, number, unitSize, arrangement = 'auto', customUnits = null) {
+            let numericValue = getNumericValue(number);
+            let baseColor = '#ffffff';
+            
+            if (typeof number === 'string' && /^[A-Za-z]$/.test(number)) {
+                baseColor = letterColors[number.toUpperCase()] || '#ffffff';
+            } else {
+                baseColor = colorMap[Math.floor(numericValue)] || '#ffffff';
+            }
+
+            // 计算行列
+            let cols = 1, rows = 1;
+            if (numericValue > 10) {
+                cols = Math.min(10, Math.ceil(Math.sqrt(numericValue)));
+                rows = Math.ceil(numericValue / cols);
+            } else {
+                rows = Math.max(1, Math.ceil(numericValue));
+                cols = 1;
+            }
+
+            const parts = [];
+            const units = [];
+            
+            // 生成单位方块
+            let count = 0;
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    if (count >= Math.ceil(numericValue)) break;
+                    
+                    const lx = (c - (cols - 1) / 2) * unitSize;
+                    const ly = (r - (rows - 1) / 2) * unitSize;
+                    
+                    const part = Bodies.rectangle(x + lx, y + ly, unitSize, unitSize, {
+                        chamfer: { radius: 4 }
+                    });
+                    parts.push(part);
+                    
+                    units.push({
+                        localX: lx,
+                        localY: ly,
+                        color: baseColor,
+                        outlineColor: null,
+                        originalNumber: number,
+                        row: r,
+                        col: c
+                    });
+                    
+                    count++;
+                }
+            }
+
+            const body = Body.create({
+                parts: parts.length > 0 ? parts : [Bodies.rectangle(x, y, 1, 1, { isSensor: true })],
+                restitution: 0,
+                friction: 0.5,
+                frictionAir: 0.05,
+                inertia: Infinity
+            });
+
+            body.renderData = {
+                number: number,
+                unitSize,
+                units: units.map(u => {
+                    const worldPos = { x: x + u.localX, y: y + u.localY };
+                    const local = Vector.rotate(Vector.sub(worldPos, body.position), -body.angle);
+                    return { ...u, localX: local.x, localY: local.y };
+                }),
+                isSquare: false,
+                isRound: false
+            };
+
+            return body;
+        }
+
+        // ==================== 生成方块 ====================
+        function spawn(number, isAngel = false) {
+            const viewportWidth = width / camera.zoom;
+            const x = camera.x + viewportWidth / 2 + (Math.random() - 0.5) * 100;
+            const y = camera.y + 100;
+            
+            const block = createNumberBlock(x, y, number, UNIT_SIZE, currentArrangement);
+            block.isAngel = isAngel;
+            
+            World.add(world, block);
+            blocks.push(block);
+            
+            if (gridMode) snapBlockToGrid(block);
+            
+            // 数量限制
+            if (blocks.length > MAX_BLOCKS) {
+                const toRemove = blocks.slice(0, blocks.length - MAX_BLOCKS);
+                toRemove.forEach(b => {
+                    World.remove(world, b);
+                    blocks = blocks.filter(x => x !== b);
+                });
+            }
+            
+            playSound('pop');
+            speak(number, null, block);
+        }
+
+        // ==================== 网格对齐 ====================
+        function snapBlockToGrid(body) {
+            if (!body) return;
+            const gx = Math.round(body.position.x / UNIT_SIZE) * UNIT_SIZE;
+            const gy = Math.round(body.position.y / UNIT_SIZE) * UNIT_SIZE;
+            Body.setPosition(body, { x: gx, y: gy });
+            Body.setVelocity(body, { x: 0, y: 0 });
+            Body.setAngularVelocity(body, 0);
+        }
+
+        function alignAllToGrid() {
+            blocks.forEach(b => snapBlockToGrid(b));
+        }
+
+        // ==================== 爆炸/变形/克隆 ====================
+        function explodeBlock(block) {
+            if (!block || !block.renderData) return;
+            const pos = { x: block.position.x, y: block.position.y };
+            const num = block.renderData.number;
+            const val = getNumericValue(num);
+            
+            World.remove(world, block);
+            blocks = blocks.filter(b => b !== block);
+            playSound('delete');
+            
+            const count = Math.min(Math.max(1, Math.floor(Math.abs(val) || 1)), 30);
+            for (let i = 0; i < count; i++) {
+                const one = createNumberBlock(pos.x, pos.y, val > 0 ? 1 : -1, UNIT_SIZE, currentArrangement);
+                const force = 10 + Math.random() * 10;
+                const angle = Math.random() * Math.PI * 2;
+                Body.setVelocity(one, { x: Math.cos(angle) * force, y: Math.sin(angle) * force });
+                World.add(world, one);
+                blocks.push(one);
+            }
+        }
+
+        function shapeShiftBlock(block) {
+            if (!block || !block.renderData) return;
+            const pos = block.position;
+            const num = block.renderData.number;
+            
+            World.remove(world, block);
+            blocks = blocks.filter(b => b !== block);
+            
+            const newBlock = createNumberBlock(pos.x, pos.y, num, UNIT_SIZE, currentArrangement);
+            World.add(world, newBlock);
+            blocks.push(newBlock);
+            
+            playSound('pop');
+        }
+
+        function cloneBlock(block) {
+            if (!block || !block.renderData) return;
+            const pos = { x: block.position.x + 30, y: block.position.y - 20 };
+            const num = block.renderData.number;
+            
+            const newBlock = createNumberBlock(pos.x, pos.y, num, UNIT_SIZE, currentArrangement);
+            World.add(world, newBlock);
+            blocks.push(newBlock);
+            
+            Body.setVelocity(block, { x: -8, y: -5 });
+            playSound('pop');
+        }
+
+        function rotateBlock(block, angleDegrees = 90) {
+            if (!block) return;
+            const delta = (angleDegrees * Math.PI) / 180;
+            Body.rotate(block, delta);
+            playSound('pop');
+        }
+
+        // ==================== 合并逻辑 ====================
+        function mergeBlocks(bodyA, bodyB) {
+            if (!bodyA.renderData || !bodyB.renderData) return;
+            
+            const valA = getNumericValue(bodyA.renderData.number);
+            const valB = getNumericValue(bodyB.renderData.number);
+            const total = valA + valB;
+            
+            const pos = {
+                x: (bodyA.position.x + bodyB.position.x) / 2,
+                y: (bodyA.position.y + bodyB.position.y) / 2
+            };
+            
+            World.remove(world, bodyA);
+            World.remove(world, bodyB);
+            blocks = blocks.filter(b => b !== bodyA && b !== bodyB);
+            
+            const newBlock = createNumberBlock(pos.x, pos.y, total, UNIT_SIZE, currentArrangement);
+            World.add(world, newBlock);
+            blocks.push(newBlock);
+            
+            playSound('pop');
+            speak(total, null, newBlock);
+        }
+
+        // ==================== 重置相机 ====================
+        function resetCamera() {
+            camera = { x: 0, y: 0, zoom: 1 };
+            updateMouseTransform();
+        }
+
+        // ==================== 渲染器 ====================
+        Events.on(render, 'afterRender', () => {
+            const ctx = render.context;
+            const canvas = render.canvas;
+            
+            // 清空并设置变换
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 天空渐变
+            const altitude = -camera.y;
+            const skyGrad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            skyGrad.addColorStop(0, '#87CEEB');
+            skyGrad.addColorStop(1, '#E0F7FA');
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 应用相机变换
+            ctx.scale(camera.zoom, camera.zoom);
+            ctx.translate(-camera.x, -camera.y);
+            
+            // 绘制地面
+            const groundY = height;
+            const viewLeft = camera.x;
+            const viewRight = camera.x + canvas.width / camera.zoom;
+            
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(viewLeft, groundY, viewRight - viewLeft, 2000);
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(viewLeft - 1000, groundY - 20, (viewRight - viewLeft) + 2000, 25);
+            
+            // 绘制所有方块
+            for (const body of blocks) {
+                if (!body || !body.renderData) continue;
+                
+                const { units, unitSize } = body.renderData;
+                if (!units || units.length === 0) continue;
+                
+                ctx.save();
+                ctx.translate(body.position.x, body.position.y);
+                ctx.rotate(body.angle || 0);
+                
+                // 绘制每个单位
+                units.forEach(u => {
+                    if (!u) return;
+                    ctx.fillStyle = u.color || '#ffffff';
+                    ctx.beginPath();
+                    ctx.rect(u.localX - unitSize/2, u.localY - unitSize/2, unitSize, unitSize);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                });
+                
+                // 绘制眼睛
+                const highestUnit = units.reduce((a, b) => (a && a.localY < b.localY) ? a : b, units[0]);
+                if (highestUnit) {
+                    const faceX = highestUnit.localX;
+                    const faceY = highestUnit.localY;
+                    const eyeSize = unitSize * 0.12;
+                    const eyeOffset = unitSize * 0.2;
+                    
+                    ctx.fillStyle = 'white';
+                    ctx.beginPath();
+                    ctx.arc(faceX - eyeOffset, faceY, eyeSize, 0, Math.PI * 2);
+                    ctx.arc(faceX + eyeOffset, faceY, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = 'black';
+                    ctx.beginPath();
+                    ctx.arc(faceX - eyeOffset, faceY, eyeSize * 0.4, 0, Math.PI * 2);
+                    ctx.arc(faceX + eyeOffset, faceY, eyeSize * 0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 嘴巴
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.arc(faceX, faceY + unitSize * 0.2, unitSize * 0.15, 0.1 * Math.PI, 0.9 * Math.PI);
+                    ctx.stroke();
+                    
+                    // 数字标签
+                    ctx.fillStyle = 'black';
+                    ctx.font = `bold ${unitSize * 0.5}px Learninglings, 'Microsoft YaHei', sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    let label = String(body.renderData.number);
+                    if (label === 'pi' || label === 'PI') label = 'π';
+                    ctx.fillText(label, faceX, faceY - unitSize * 0.5);
+                    
+                    // 对话气泡
+                    if (body.activeSpeech && Date.now() < body.speechExpiry) {
+                        const bubbleText = body.activeSpeech;
+                        ctx.font = `bold ${unitSize * 0.35}px Learninglings, 'Microsoft YaHei', sans-serif`;
+                        const metrics = ctx.measureText(bubbleText);
+                        const bw = Math.max(unitSize * 1.5, metrics.width + 24);
+                        const bh = unitSize * 0.6;
+                        const bx = faceX - bw/2;
+                        const by = faceY - unitSize * 1.2;
+                        
+                        ctx.fillStyle = 'white';
+                        ctx.strokeStyle = 'black';
+                        ctx.lineWidth = 2;
+                        ctx.beginPath();
+                        ctx.roundRect(bx, by, bw, bh, 8);
+                        ctx.fill();
+                        ctx.stroke();
+                        
+                        ctx.fillStyle = 'black';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(bubbleText, faceX, by + bh/2);
+                    }
+                }
+                
+                ctx.restore();
+            }
+            
+            // 更新高度指示器
+            const heightEl = document.getElementById('height-indicator');
+            if (heightEl) {
+                const blocksAway = Math.round((-camera.y) / UNIT_SIZE);
+                heightEl.textContent = `高度：${blocksAway} 方块 · 区域：${blocksAway >= 150 ? '虚空' : '地面'}`;
+            }
+        });
+
+        // 添加 roundRect 方法
+        CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            this.moveTo(x + r, y);
+            this.lineTo(x + w - r, y);
+            this.quadraticCurveTo(x + w, y, x + w, y + r);
+            this.lineTo(x + w, y + h - r);
+            this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            this.lineTo(x + r, y + h);
+            this.quadraticCurveTo(x, y + h, x, y + h - r);
+            this.lineTo(x, y + r);
+            this.quadraticCurveTo(x, y, x + r, y);
+            return this;
+        };
+
+        // ==================== 碰撞检测（合并） ====================
+        Events.on(engine, 'afterUpdate', () => {
+            const snapThreshold = UNIT_SIZE * 1.1;
+            
+            for (let i = 0; i < blocks.length; i++) {
+                for (let j = i + 1; j < blocks.length; j++) {
+                    const bodyA = blocks[i];
+                    const bodyB = blocks[j];
+                    
+                    if (!bodyA || !bodyB || !bodyA.renderData || !bodyB.renderData) continue;
+                    
+                    const dist = Vector.magnitude(Vector.sub(bodyA.position, bodyB.position));
+                    if (dist > UNIT_SIZE * 3) continue;
+                    
+                    // 简单合并逻辑
+                    if (dist < snapThreshold * 2) {
+                        mergeBlocks(bodyA, bodyB);
+                        return;
+                    }
+                }
+            }
+        });
+
+        // ==================== 相机控制 ====================
+        render.canvas.addEventListener('pointerdown', (e) => {
+            // 点击方块触发交互
+            const rect = render.canvas.getBoundingClientRect();
+            const worldPos = {
+                x: camera.x + (e.clientX - rect.left) / camera.zoom,
+                y: camera.y + (e.clientY - rect.top) / camera.zoom
+            };
+            
+            const hit = Query.point(blocks, worldPos);
+            if (hit.length > 0) {
+                const body = hit[0];
+                
+                if (cloneMode) {
+                    cloneBlock(body);
+                    cloneMode = false;
+                    document.getElementById('clone-btn')?.classList.remove('active');
+                } else if (activeMode === 'explode') {
+                    explodeBlock(body);
+                    activeMode = 'none';
+                    document.getElementById('explode-btn')?.classList.remove('active');
+                } else if (activeMode === 'shape-shift') {
+                    shapeShiftBlock(body);
+                    activeMode = 'none';
+                    document.getElementById('shape-shift-btn')?.classList.remove('active');
+                } else if (activeMode === 'rotate') {
+                    rotateBlock(body, 90);
+                    activeMode = 'none';
+                    document.getElementById('rotate-btn')?.classList.remove('active');
+                } else {
+                    speak(body.renderData.number, null, body);
+                }
+            }
+        });
+
+        // 滚轮缩放
+        render.canvas.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomIntensity = 0.1;
+            const wheel = e.deltaY < 0 ? 1 : -1;
+            const zoomFactor = Math.exp(wheel * zoomIntensity);
+            
+            const mouseX = e.clientX - render.canvas.offsetLeft;
+            const mouseY = e.clientY - render.canvas.offsetTop;
+            
+            const worldX = camera.x + mouseX / camera.zoom;
+            const worldY = camera.y + mouseY / camera.zoom;
+            
+            camera.zoom = clampZoom(camera.zoom * zoomFactor);
+            camera.x = worldX - mouseX / camera.zoom;
+            camera.y = worldY - mouseY / camera.zoom;
+            
+            updateMouseTransform();
+        }, { passive: false });
+
+        // 键盘控制
+        const keys = {};
+        window.addEventListener('keydown', (e) => keys[e.code] = true);
+        window.addEventListener('keyup', (e) => keys[e.code] = false);
+
+        Events.on(runner, 'beforeUpdate', () => {
+            const speed = 10 / camera.zoom;
+            if (keys['KeyW'] || keys['ArrowUp']) camera.y -= speed;
+            if (keys['KeyS'] || keys['ArrowDown']) camera.y += speed;
+            if (keys['KeyA'] || keys['ArrowLeft']) camera.x -= speed;
+            if (keys['KeyD'] || keys['ArrowRight']) camera.x += speed;
+            
+            // 无限缩放
+            if (infiniteZoom) {
+                camera.zoom = clampZoom(camera.zoom * 1.005);
+            }
+            
+            updateMouseTransform();
+            Body.setPosition(ground, { x: camera.x + width / (2 * camera.zoom), y: height + 100 });
+            
+            if (!isTimeStopped) {
+                world.gravity.y = 1;
+            }
+        });
+
+        // ==================== UI 初始化 ====================
+        function initUI() {
+            // 生成按钮
+            const spawnNumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 'pi', 'A', 'B', 'C', 'random'];
+            const buttonRow = document.getElementById('spawn-buttons');
+            
+            spawnNumbers.forEach(num => {
+                const btn = document.createElement('button');
+                btn.className = 'spawn-btn';
+                btn.textContent = num === 'random' ? '?' : num;
+                btn.style.backgroundColor = colorMap[num] || '#ffffff';
+                
+                btn.addEventListener('click', () => {
+                    if (num === 'random') {
+                        const pool = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+                        spawn(pool[Math.floor(Math.random() * pool.length)]);
+                    } else {
+                        spawn(num);
+                    }
+                });
+                
+                buttonRow.appendChild(btn);
+            });
+            
+            // 自定义按钮
+            const customBtn = document.createElement('button');
+            customBtn.id = 'custom-btn';
+            customBtn.className = 'spawn-btn';
+            customBtn.textContent = '自定义';
+            customBtn.addEventListener('click', () => {
+                const input = prompt('输入数字或符号（如 7、pi、A）：', '7');
+                if (input) spawn(input);
+            });
+            buttonRow.appendChild(customBtn);
+            
+            // 排列菜单
+            document.querySelectorAll('.arr-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.arr-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentArrangement = btn.dataset.arr;
+                });
+            });
+            
+            // 时间停止
+            const timeBtn = document.getElementById('time-btn');
+            timeBtn.addEventListener('click', () => {
+                isTimeStopped = !isTimeStopped;
+                world.gravity.y = isTimeStopped ? 0 : 1;
+                timeBtn.textContent = isTimeStopped ? '开始时间' : '停止时间';
+                timeBtn.classList.toggle('active', isTimeStopped);
+            });
+            
+            // 重置相机
+            document.getElementById('reset-cam-btn').addEventListener('click', resetCamera);
+            
+            // 清除所有
+            document.getElementById('clear-btn').addEventListener('click', () => {
+                blocks.forEach(b => World.remove(world, b));
+                blocks = [];
+                playSound('delete');
+            });
+            
+            // 模式按钮
+            const shapeShiftBtn = document.getElementById('shape-shift-btn');
+            const explodeBtn = document.getElementById('explode-btn');
+            const rotateBtn = document.getElementById('rotate-btn');
+            const cloneBtn = document.getElementById('clone-btn');
+            const gridBtn = document.getElementById('grid-btn');
+            
+            shapeShiftBtn.addEventListener('click', () => {
+                activeMode = activeMode === 'shape-shift' ? 'none' : 'shape-shift';
+                shapeShiftBtn.classList.toggle('active', activeMode === 'shape-shift');
+                explodeBtn.classList.remove('active');
+                rotateBtn.classList.remove('active');
+                cloneMode = false;
+                cloneBtn.classList.remove('active');
+            });
+            
+            explodeBtn.addEventListener('click', () => {
+                activeMode = activeMode === 'explode' ? 'none' : 'explode';
+                explodeBtn.classList.toggle('active', activeMode === 'explode');
+                shapeShiftBtn.classList.remove('active');
+                rotateBtn.classList.remove('active');
+                cloneMode = false;
+                cloneBtn.classList.remove('active');
+            });
+            
+            rotateBtn.addEventListener('click', () => {
+                activeMode = activeMode === 'rotate' ? 'none' : 'rotate';
+                rotateBtn.classList.toggle('active', activeMode === 'rotate');
+                shapeShiftBtn.classList.remove('active');
+                explodeBtn.classList.remove('active');
+                cloneMode = false;
+                cloneBtn.classList.remove('active');
+            });
+            
+            cloneBtn.addEventListener('click', () => {
+                cloneMode = !cloneMode;
+                cloneBtn.classList.toggle('active', cloneMode);
+                activeMode = 'none';
+                shapeShiftBtn.classList.remove('active');
+                explodeBtn.classList.remove('active');
+                rotateBtn.classList.remove('active');
+            });
+            
+            gridBtn.addEventListener('click', () => {
+                gridMode = !gridMode;
+                gridBtn.classList.toggle('active', gridMode);
+                if (gridMode) alignAllToGrid();
+            });
+            
+            // 音乐按钮
+            const musicBtn = document.getElementById('music-btn');
+            let isMusicPlaying = false;
+            musicBtn.addEventListener('click', async () => {
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
+                isMusicPlaying = !isMusicPlaying;
+                musicBtn.textContent = isMusicPlaying ? '暂停音乐' : '播放音乐';
+                musicBtn.classList.toggle('active', isMusicPlaying);
+            });
+            
+            // 音量滑块
+            const volumeSlider = document.getElementById('volume-slider');
+            volumeSlider.addEventListener('input', (e) => {
+                // 音量控制逻辑
+            });
+            
+            // 加载遮罩
+            const overlay = document.getElementById('loading-overlay');
+            const playBtn = document.getElementById('play-btn');
+            playBtn.addEventListener('click', async () => {
+                if (audioCtx.state === 'suspended') await audioCtx.resume();
+                overlay.classList.add('hidden');
+            });
+            
+            // 建议条关闭
+            document.getElementById('suggestion-close').addEventListener('click', () => {
+                document.getElementById('suggestion-bar').classList.add('hidden');
+            });
+        }
+
+        // ==================== 启动 ====================
+        function updateRendererSize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            render.options.width = width;
+            render.options.height = height;
+            render.canvas.width = width;
+            render.canvas.height = height;
+        }
+        
+        window.addEventListener('resize', updateRendererSize);
+        updateRendererSize();
+        
+        initUI();
+        
+        // 初始生成几个方块
+        setTimeout(() => {
+            spawn(1);
+            spawn(2);
+            spawn(3);
+            spawn(4);
+        }, 500);
+        
+        console.log('🎮 数字方块游乐场 · 中文版 已启动！');
+    </script>
+</body>
+</html>

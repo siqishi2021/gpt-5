@@ -1,0 +1,9 @@
+id: website_template_7
+title: 霓虹科技风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  以强冲击感暗调影像为主视觉，搭配醒目大白字，氛围浓烈有记忆点，让新闻主题兼具视觉张力与情绪感染力。采用大banner+卡片分栏布局，搜索栏居中聚焦，热门板块层级清晰，简洁结构兼顾视觉重心与信息传递效率。
+screenshot_url: /website_template_7.png
+tags:
+  - website
+  - 中文版

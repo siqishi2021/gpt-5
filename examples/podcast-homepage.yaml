@@ -1,0 +1,11 @@
+id: podcast-homepage
+title: 播客主页
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：播客主页
+  - 目标：展示所有播客节目
+  - 功能：节目列表、搜索、订阅按钮
+  - UI 应以音频为中心且易于导航
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/podcast-homepage.png
+tags:
+  - 落地页

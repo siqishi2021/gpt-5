@@ -1,0 +1,11 @@
+id: math-practice-drills
+title: 数学练习训练
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：数学练习训练
+  - 目标：提高数学问题的速度和准确性
+  - 功能：计时测验、难度设置、分数追踪
+  - UI 应极简，文字大且易读
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/math-practice-drills.png
+tags:
+  - 应用

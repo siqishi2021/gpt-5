@@ -1,0 +1,7 @@
+id: openai-fm-inspired
+title: OpenAI.fm 灵感
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，灵感来源于 https://openai.fm/
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/openai-fm-inspired.png
+tags:
+  - 落地页

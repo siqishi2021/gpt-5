@@ -1,0 +1,9 @@
+id: website_template_9
+title: 黑白杂志风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  黑白色调叠轻奢字体，主视觉搭时尚造型图，排版疏朗大气，突出个人设计特质，适配UI/UX等创意从业者的作品集展示页。
+screenshot_url: /website_template_9.png
+tags:
+  - website
+  - 中文版

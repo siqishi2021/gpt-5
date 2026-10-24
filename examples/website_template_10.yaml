@@ -1,0 +1,9 @@
+id: website_template_10
+title: 橄榄绿自然风格
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  浅暖柔色调为主，模块化规整排版，以萌宠实拍图为核心元素，氛围温馨治愈，适配宠物托管站，操作分区清晰易交互。
+screenshot_url: /website_template_10.png
+tags:
+  - website
+  - 中文版

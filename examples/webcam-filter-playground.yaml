@@ -1,0 +1,12 @@
+id: webcam-filter-playground
+title: 摄像头滤镜游乐场
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：摄像头滤镜游乐场
+  - 目标：为实时摄像头画面应用有趣且令人惊喜的滤镜
+  - 功能：多种效果、快照拍摄、保存图片
+  - UI 应极简，带有实时预览
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/webcam-filter-playground.png
+tags:
+  - 互动
+camera: true

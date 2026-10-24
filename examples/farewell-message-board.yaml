@@ -1,0 +1,12 @@
+id: farewell-message-board
+title: 欢送留言板
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，设计一个温暖有趣的欢送留言板：
+  - 使用最新的 UI 组件，使网站具有专业外观
+  - 将 10 条预先发布的留言精美地展示为暖心卡片，每条都配有有意义的图片。如果留言包含图片，确保文字仍然是主要焦点
+  - 包含一个“写留言”按钮，允许用户添加新留言
+  - 在顶部添加一个伪登录按钮
+  - 确保 UI 设计规范（如按钮大小）在整个页面保持一致
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/farewell-message-board.png
+tags:
+  - 应用

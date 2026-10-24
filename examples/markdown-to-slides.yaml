@@ -1,0 +1,12 @@
+id: markdown-to-slides
+title: Markdown → 幻灯片
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：Markdown → 幻灯片
+  - 目标：将 Markdown（使用 --- 作为幻灯片分隔符）转换为演示文稿
+  - 功能：带全屏按钮的实时预览、键盘导航、主题切换、示例演示文稿加载器
+  - 外观必须精致，适合商业演示
+  - 为演示目的，文本框中应预填示例 Markdown 文本
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/markdown-to-slides.png
+tags:
+  - 工具

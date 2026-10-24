@@ -1,0 +1,11 @@
+id: trivia-quiz-game
+title: 知识问答
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，托管一个主题知识问答游戏：
+  - 输入项：问题文本、多项选择答案、正确答案
+  - 每次显示一个问题，卡片式布局，大号易读文字，动画反馈（绿色对勾或红色叉号）
+  - 顶部包含进度条，结束时显示最终分数
+  - 创建 10 个内置问答并随机显示；问答必须是美国公民的基础水平
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/trivia-quiz-game.png
+tags:
+  - 游戏

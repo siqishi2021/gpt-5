@@ -1,0 +1,9 @@
+id: skywork1
+title: 零售预测报告
+prompt: |
+  创建一个现代旅行网站首页（Landing Page），输出单个 HTML 文件（内联 CSS + 少量 JS），可直接运行。
+  已选择模板作为起点，可以根据需要手动修改，或告诉我您的文档主题，我将帮您自动生成相应内容。
+screenshot_url: /skywork1.png
+tags:
+  - website
+  - 中文版

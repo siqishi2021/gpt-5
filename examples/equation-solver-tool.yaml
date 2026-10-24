@@ -1,0 +1,11 @@
+id: equation-solver-tool
+title: 方程求解工具
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：方程求解工具
+  - 目标：求解并解释数学方程
+  - 功能：输入框、逐步分解、导出结果
+  - UI 应学术化且极简
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/equation-solver-tool.png
+tags:
+  - 工具

@@ -1,0 +1,9 @@
+id: event-count-down
+title: 活动倒计时
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，构建一个实时活动倒计时。
+  - 输入项：活动名称、日期/时间、地点、背景图片上传
+  - 显示大号动画倒计时数字、微妙的背景视差效果、以及“保存到日历”按钮
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/event-count-down.png
+tags:
+  - 实用工具

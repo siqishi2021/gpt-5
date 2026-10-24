@@ -1,0 +1,404 @@
+<!DOCTYPE html><html lang="en"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Plan 2030</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;700&amp;display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #9a4b35;
+            --light-bg: #f9f2f0;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --border-color: #e3d3cf;
+        }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 2em 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-dark);
+            min_width: 794px;
+        }
+
+        .page {
+            background-color: var(--text-light);
+            width: 794px;
+            min-height: 1123px;
+            margin-bottom: 0.2em;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            padding: 40px 50px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Page 1 Specifics */
+        .main-header {
+            display: flex;
+            height: 300px;
+            margin-bottom: 40px;
+        }
+
+        .header-content {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            padding: 40px;
+            width: 50%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .header-content p.company-name {
+            font-size: 14px;
+            margin: 0 0 20px 0;
+        }
+
+        .header-content h1 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 400;
+            font-size: 40px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .header-content p.subtitle {
+            font-size: 16px;
+            margin: 15px 0 0 0;
+        }
+        
+        .header-image {
+            width: 50%;
+            background-image: url('https://s3.us-west-2.amazonaws.com/images.unsplash.com/small/photo-1556761175-5973dc0f32e7');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            flex-grow: 1;
+        }
+
+        .info-block {
+            background-color: var(--light-bg);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        
+        .info-block.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .block-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .block-title svg {
+            width: 24px;
+            height: 24px;
+            fill: var(--primary-color);
+        }
+
+        .block-title h3 {
+            font-family: 'Archivo', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--primary-color);
+            margin: 0;
+        }
+        
+        .info-block p {
+            font-size: 11px;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .info-block ul {
+            font-size: 11px;
+            line-height: 1.8;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .info-block li {
+            margin-bottom: 5px;
+        }
+
+        /* Page 2 Specifics */
+        .section-container {
+            margin-bottom: 30px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-top: 15px;
+        }
+
+        .custom-table th, .custom-table td {
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        .custom-table thead tr {
+            background-color: var(--light-bg);
+        }
+
+        .custom-table th {
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+        
+        .custom-table tr td:first-child {
+            font-weight: 700;
+        }
+        
+        #financials-table tr td:first-child {
+            font-weight: normal;
+        }
+        
+        #financials-table tr:first-child td:first-child {
+            font-weight: 700;
+        }
+        
+        .contact-footer {
+            background-color: var(--light-bg);
+            padding: 15px 30px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+        }
+
+        .contact-item svg {
+            width: 20px;
+            height: 20px;
+            fill: var(--primary-color);
+        }
+    </style>
+
+</head><body>
+
+    <div class="page" id="page1" data-cid="Ko4uBe">
+        <header class="main-header" style="width: 795.993px; flex: 0 0 326px; transform: translateX(4px) translateY(-41px);" data-cid="vG6Pst">
+            <div class="header-content" style="flex: 0 0 425px; transform: translateX(-54px); height: 330px;" data-cid="gsb3nk">
+                <p class="company-name" data-cid="Zmvg1a">Salford Company</p>
+                <h1 style="width: 308px; font-size: 44px;" data-cid="Zvo6_3">Business Plan 2030</h1>
+                <p class="subtitle" style="width: 277px;" data-cid="eAtJ8u">Creative Marketing That Drives Results</p>
+            </div>
+            <div class="header-image editor-empty-block" style="background-size: 100% 100%; background-image: url(&quot;https://static-us-img.skywork.ai/multi/upload/image/multi_upload_image_20260306_061817.png&quot;); width: 383.993px; height: 330px; transform: translateX(-56px);" data-cid="QBlUrU"></div>
+        </header>
+
+        <main class="content-grid" style="transform: translateY(-40px);" data-cid="0Qhp0_">
+            <div class="info-block" style="width: 294.5px; height: 162.672px;" data-cid="vvUkBa">
+                <div class="block-title" data-cid="jJx_CX">
+                    <svg viewBox="0 0 24 24" data-cid="IXYkLV"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M8,12H16V14H8V12M8,16H16V18H8V16Z" data-cid="qDpGPI"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="IwECEF">Executive Summary</h3>
+                </div>
+                <p style="font-size: 12px; line-height: 14.4px;" data-cid="92QyzG">Borcelle is a modern marketing agency focused on helping small to mid-sized businesses grow through effective branding, digital strategies, and content-driven campaigns. We blend creativity with data to craft marketing solutions that convert, engage, and elevate brand presence.</p>
+            </div>
+
+            <div class="info-block" style="height: 162.672px;" data-cid="d9kODg">
+                <div class="block-title" data-cid="2bLy39">
+                    <svg viewBox="0 0 24 24" data-cid="m7Qu8B"><path d="M12,2A7,7 0 0,0 5,9C5,11.38 6.19,13.47 8,14.74V17A1,1 0 0,0 9,18H15A1,1 0 0,0 16,17V14.74C17.81,13.47 19,11.38 19,9A7,7 0 0,0 12,2M9,21A1,1 0 0,0 10,22H14A1,1 0 0,0 15,21V20H9V21Z" data-cid="Rt_x5B"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="dbPbnS">Vision and mission</h3>
+                </div>
+                <p style="line-height: 14.4px; font-size: 12px;" data-cid="LQ01My">Borcelle is a modern marketing agency focused on helping small to mid-sized businesses grow through effective branding, digital strategies, and content-driven campaigns. We blend creativity with data to craft marketing solutions that convert, engage, and elevate brand presence.</p>
+            </div>
+
+            <div class="info-block" style="transform: translateY(-15px);" data-cid="U6xkZY">
+                <div class="block-title" data-cid="vAPmLf">
+                    <svg viewBox="0 0 24 24" data-cid="BYQiTb"><path d="M12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8M12,10A2,2 0 0,0 10,12A2,2 0 0,0 12,14A2,2 0 0,0 14,12A2,2 0 0,0 12,10M10,22C9.75,22 9.54,21.82 9.5,21.58L9.13,18.93C8.5,18.68 7.96,18.34 7.45,17.9L4.94,18.95C4.7,19.05 4.44,19 4.34,18.78L2.34,15.22C2.24,15 2.3,14.74 2.5,14.55L4.6,12.87C4.58,12.57 4.56,12.29 4.56,12C4.56,11.71 4.58,11.43 4.6,11.13L2.5,9.45C2.3,9.26 2.24,9 2.34,8.78L4.34,5.22C4.44,5 4.7,4.95 4.94,5.05L7.45,6.1C7.96,5.66 8.5,5.32 9.13,5.07L9.5,2.42C9.54,2.18 9.75,2 10,2H14C14.25,2 14.46,2.18 14.5,2.42L14.87,5.07C15.5,5.32 16.04,5.66 16.55,6.1L19.06,5.05C19.3,4.95 19.56,5 19.66,5.22L21.66,8.78C21.76,9 21.7,9.26 21.5,9.45L19.4,11.13C19.42,11.43 19.44,11.71 19.44,12C19.44,12.29 19.42,12.57 19.4,12.87L21.5,14.55C21.7,14.74 21.76,15 21.66,15.22L19.66,18.78C19.56,19 19.3,19.05 19.06,18.95L16.55,17.9C16.04,18.34 15.5,18.68 14.87,18.93L14.5,21.58C14.46,21.82 14.25,22 14,22H10Z" data-cid="Xam59h"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="F233Hb">Core Services</h3>
+                </div>
+                <ul style="line-height: 14.4px;" data-cid="GuhiYx">
+                    <li style="font-size: 12px; line-height: 14.4px;" data-cid="xlDXnE">Brand Strategy &amp; Visual Identity</li>
+                    <li style="font-size: 12px;" data-cid="WsnGSF">Digital Marketing Campaigns</li>
+                    <li style="font-size: 12px;" data-cid="6sRuDH">Content Creation (Graphics, Copy, Video)</li>
+                    <li style="font-size: 12px;" data-cid="KYpVCY">Website &amp; Landing Page Design</li>
+                    <li style="font-size: 12px;" data-cid="gZeunB">Social Media Management</li>
+                    <li style="font-size: 12px;" data-cid="cYmmv4">Email Marketing &amp; Automation</li>
+                </ul>
+            </div>
+
+            <div class="info-block" style="transform: translateY(-15px);" data-cid="CvDNnY">
+                <div class="block-title" data-cid="v8QzL2">
+                    <svg viewBox="0 0 24 24" data-cid="PTDgWo"><path d="M12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9Z" data-cid="whRXcO"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="BoJvrx">Target Market</h3>
+                </div>
+                <ul style="line-height: 14.4px;" data-cid="y_1ATl">
+                    <li style="font-size: 12px;" data-cid="pzta4h">Startups and growing businesses</li>
+                    <li style="font-size: 12px;" data-cid="rP0XBC">E-commerce brands</li>
+                    <li style="font-size: 12px;" data-cid="5qJ_wW">Personal brands and consultants</li>
+                    <li style="font-size: 12px;" data-cid="Y-_0m7">Local businesses entering digital space</li>
+                    <li style="font-size: 12px;" data-cid="RjTQxn">Non-profits and community projects</li>
+                </ul>
+            </div>
+
+            <div class="info-block" style="height: 162.672px; transform: translateY(-10px);" data-cid="WxG_6W">
+                <div class="block-title" data-cid="fFOB1u">
+                    <svg viewBox="0 0 24 24" data-cid="OeacZO"><path d="M12,16A4,4 0 0,1 8,12A4,4 0 0,1 12,8A4,4 0 0,1 16,12A4,4 0 0,1 12,16M12,4A1.5,1.5 0 0,0 10.5,5.5A1.5,1.5 0 0,0 12,7A1.5,1.5 0 0,0 13.5,5.5A1.5,1.5 0 0,0 12,4M5.5,10.5A1.5,1.5 0 0,0 4,12A1.5,1.5 0 0,0 5.5,13.5A1.5,1.5 0 0,0 7,12A1.5,1.5 0 0,0 5.5,10.5M18.5,10.5A1.5,1.5 0 0,0 17,12A1.5,1.5 0 0,0 18.5,13.5A1.5,1.5 0 0,0 20,12A1.5,1.5 0 0,0 18.5,10.5M12,17A1.5,1.5 0 0,0 10.5,18.5A1.5,1.5 0 0,0 12,20A1.5,1.5 0 0,0 13.5,18.5A1.5,1.5 0 0,0 12,17M2,12C2,17.5 6.5,22 12,22S22,17.5 22,12 17.5,2 12,2C6.47,2 2,6.5,2,12Z" data-cid="v7_pA3"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="dD-F92">Business Model</h3>
+                </div>
+                <ul style="font-size: 12px; line-height: 14.4px;" data-cid="fOyJV3">
+                    <li data-cid="MGJRYY">Project-based services (per campaign)</li>
+                    <li data-cid="8TDyYU">Monthly retainer packages</li>
+                    <li data-cid="IZdqqr">One-time brand &amp; strategy workshops</li>
+                    <li data-cid="FPI9HM">Long-term contracts for ongoing digital support</li>
+                </ul>
+            </div>
+
+            <div class="info-block" style="height: 162.672px; width: 294.5px; inset: auto; font-size: 16px; letter-spacing: normal; line-height: normal; text-align: start; color: rgb(51, 51, 51); font-weight: 400; font-family: Archivo, sans-serif; opacity: 1; background-color: rgb(249, 242, 240); background-image: none; transform: translateY(-10px);" data-cid="i2bDZk">
+                <div class="block-title" data-cid="lxbdkB">
+                    <svg viewBox="0 0 24 24" data-cid="dfT4Nw"><path d="M2,3H4V5H2V3M2,7H4V9H2V7M2,11H4V13H2V11M2,15H4V17H2V15M2,19H4V21H2V19M20,3H6V5H20V3M20,7H6V9H20V7M20,11H6V13H20V11M20,15H6V17H20V15M20,19H6V21H20V19Z" data-cid="qgigWt"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="G2dr1M">Marketing Strategy</h3>
+                </div>
+                <ul style="font-size: 12px; line-height: 14.4px;" data-cid="Vd28nr">
+                    <li data-cid="kOS19S">Build online presence via web and social media</li>
+                    <li data-cid="YYOUcH">Share stories and insights through content</li>
+                    <li data-cid="-pRkf9">Focus on SEO and referral networks</li>
+                    <li data-cid="wRZ6Co">Host webinars and guides to build trust</li>
+                    <li data-cid="BH2aES">Offer introductory packages for first-time clients</li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <div class="page" id="page2" data-cid="ODrTrY">
+        <div class="section-container" data-cid="nv4KXg">
+            <div class="block-title" data-cid="bOPyyR">
+                <svg viewBox="0 0 24 24" data-cid="7O3gE5"><path d="M22,21H2V3H4V19H6V10H8V19H10V14H12V19H14V11H16V19H18V8H20V19H22V21Z" data-cid="CMZqVH"></path></svg>
+                <h3 style="font-size: 15px;" data-cid="QpUFuR">Competitive Analysis</h3>
+            </div>
+            <div class="sk-doc-native-table-frame" data-scroll-left-active="false" data-scroll-right-active="false" data-scrolling="false" data-cid="dFtV6e"><table class="custom-table" data-cid="04pfB8">
+                <thead data-cid="-1-_gJ">
+                    <tr data-cid="aRhLjQ">
+                        <th style="border-top: 2px solid rgb(154, 76, 54); border-left: 2px solid rgb(154, 76, 54); border-right: 2px solid rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-bottom-width: 2px; font-size: 12px;" data-cid="OQt3WS">Agency Type</th>
+                        <th style="border-top: 2px solid rgb(154, 76, 54); border-right: 2px solid rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left-color: rgb(154, 76, 54); border-bottom-width: 2px; border-left-width: 2px; font-size: 12px;" data-cid="0_DoMQ">Strengths</th>
+                        <th style="border-top: 2px solid rgb(154, 76, 54); border-right: 2px solid rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left-color: rgb(154, 76, 54); border-bottom-width: 2px; border-left-width: 2px; font-size: 12px;" data-cid="2mgmeu">Weaknesses</th>
+                    </tr>
+                </thead>
+                <tbody data-cid="lULaUv">
+                    <tr data-cid="KYrkYp">
+                        <td style="border-left: 2px solid rgb(154, 76, 54); border-top-color: rgb(154, 76, 54); border-right: 2px solid rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-top-width: 2px; border-bottom-width: 2px; font-size: 12px; font-weight: 400;" data-cid="R3evba">Large Agencies</td>
+                        <td style="border-width: 2px; border-color: rgb(154, 76, 54); border-right-style: solid; font-size: 12px;" data-cid="_-5lS7">Wide service scope, big portfolios</td>
+                        <td style="border-right: 2px solid rgb(154, 76, 54); border-top-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-color: rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left-color: rgb(154, 76, 54); font-size: 12px;" data-cid="eNzpMZ">Expensive, less personalized</td>
+                    </tr>
+                    <tr data-cid="7wFgWm">
+                        <td style="border-color: rgb(154, 76, 54); border-left-style: solid; border-right-style: solid; font-size: 12px; font-weight: 400;" data-cid="H4wBVw">Freelancer Networks</td>
+                        <td style="border-width: 2px; border-right-style: solid; border-color: rgb(154, 76, 54); font-size: 12px;" data-cid="547R6P">Affordable, flexible</td>
+                        <td style="border-right: 2px solid rgb(154, 76, 54); border-top-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-color: rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left-color: rgb(154, 76, 54); font-size: 12px;" data-cid="RZRHgm">Inconsistent quality, low support</td>
+                    </tr>
+                    <tr data-cid="alL6he">
+                        <td style="border-top: 2px solid rgb(154, 76, 54); border-right: 2px solid rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left: 2px solid rgb(154, 76, 54); border-bottom-width: 2px; font-size: 12px; font-weight: 400;" data-cid="Bjp_t6">Borcelle</td>
+                        <td style="border-width: 2px; border-right-style: solid; border-color: rgb(154, 76, 54); font-size: 12px;" data-cid="l3kVNK">Strategic + creative, scalable</td>
+                        <td style="border-right: 2px solid rgb(154, 76, 54); border-top-width: 2px; border-bottom-width: 2px; border-left-width: 2px; border-top-color: rgb(154, 76, 54); border-bottom-color: rgb(154, 76, 54); border-left-color: rgb(154, 76, 54); font-size: 12px;" data-cid="rBvkz3">Young agency, building portfolio</td>
+                    </tr>
+                </tbody>
+            </table></div>
+        </div>
+        
+        <div class="section-container" data-cid="oXNAcO">
+            <div class="block-title" data-cid="zNrV27">
+                
+                <h3 data-cid="gUOoY7">Financial Overview (estimates)</h3>
+            </div>
+            <div class="sk-doc-native-table-frame" data-scroll-left-active="false" data-scroll-right-active="false" data-scrolling="false" data-cid="OBgDrk"><table class="custom-table" id="financials-table" style="border-color: rgb(154, 76, 54); font-size: 12px; border-style: solid;" data-cid="of5NJM">
+                <thead data-cid="PFdbOL">
+                    <tr data-cid="Ws05LU">
+                        <th style="transform: translateY(0px); border-top-style: solid; border-left-style: solid; border-right-style: solid; font-size: 12px; border-color: rgb(154, 76, 54);" data-cid="Bb8UVK">Item</th>
+                        <th style="border-top-style: solid; border-left-style: solid; border-right-style: solid; border-color: rgb(154, 76, 54);" data-cid="bimtN5">Monthly (USD)</th>
+                        <th style="border-color: rgb(154, 76, 54);" data-cid="XKZN2U">Yearly (USD)</th>
+                    </tr>
+                </thead>
+                <tbody data-cid="fp5cef">
+                    <tr data-cid="72KYUi">
+                        <td style="font-weight: 400; border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="yEYEmh">Revenue</td>
+                        <td style="border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="fzHWzR">$6,000</td>
+                        <td style="border-top-style: solid; border-left-style: solid; border-right-style: solid; border-color: rgb(154, 76, 54);" data-cid="Bij2nm">$72,000</td>
+                    </tr>
+                    <tr data-cid="4JRKuN">
+                        <td style="border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="YtlQ1j">Operating Costs</td>
+                        <td style="border-top-style: solid; border-left-style: solid; border-right-style: solid; border-color: rgb(154, 76, 54);" data-cid="v4T30Q">$2,000</td>
+                        <td style="border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="7HB1jO">$24,000</td>
+                    </tr>
+                    <tr data-cid="UPRkp7">
+                        <td style="border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="ppqPVo">Net Profit</td>
+                        <td style="border-top-style: solid; border-left-style: solid; border-right-style: solid; border-color: rgb(154, 76, 54);" data-cid="VIwPM-">$4,000</td>
+                        <td style="border-right-style: solid; border-left-style: solid; border-top-style: solid; border-color: rgb(154, 76, 54);" data-cid="2bSLJQ">$48,000</td>
+                    </tr>
+                </tbody>
+            </table></div>
+        </div>
+
+        <main class="content-grid" style="height: 0px; width: 693.993px;" data-cid="8kLvmg">
+            <div class="info-block" style="height: 200px; background-color: transparent;" data-cid="Z-NpU2">
+                <div class="block-title" data-cid="2hEJ-e">
+                    <svg viewBox="0 0 24 24" data-cid="J-fgq_"><path d="M16,13C15.71,13 15.38,13 15.03,13.05C16.19,13.89 17,15 17,16.5V19H23V16.5C23,14.17 18.33,13 16,13M8,13C5.67,13 1,14.17 1,16.5V19H15V16.5C15,14.17 10.33,13 8,13M8,11A3,3 0 0,0 11,8A3,3 0 0,0 8,5A3,3 0 0,0 5,8A3,3 0 0,0 8,11M16,11A3,3 0 0,0 19,8A3,3 0 0,0 16,5A3,3 0 0,0 13,8A3,3 0 0,0 16,11Z" data-cid="PHfo2L"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="7QV6-e">Core Team</h3>
+                </div>
+                <ul style="font-size: 12px; line-height: 14.4px;" data-cid="flwmGV">
+                    <li data-cid="c5jz7V">Founder &amp; Director: Olivia Wilson</li>
+                    <li data-cid="c47E-u">Marketing Strategist: Jonathan Patterson</li>
+                    <li data-cid="pw4Pq5">Content Creator: Adora Montminy</li>
+                    <li data-cid="0vZowT">Support Staff: Harper Russo</li>
+                    <li data-cid="UW1ybu">Project Manager: Kimberly Nguyen</li>
+                    <li data-cid="SN8Hqu">Graphic Designer: Pedro Fernandes</li>
+                </ul>
+            </div>
+            <div class="info-block" style="height: 200px; background-color: transparent;" data-cid="pJnsjj">
+                <div class="block-title" data-cid="1U2HB_">
+                    <svg viewBox="0 0 24 24" data-cid="DgcRmj"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20M16.24,9.5C16.5,9.23 16.44,8.77 16.1,8.5C15.76,8.23 15.3,8.29 15.03,8.62L11,13.41L8.97,11.38C8.7,11.11 8.24,11.11 7.97,11.38C7.7,11.65 7.7,12.11 7.97,12.38L10.6,15L16.24,9.5Z" data-cid="_8bkg-"></path></svg>
+                    <h3 style="font-size: 15px;" data-cid="8ruWp-">Next 12-Month Goals</h3>
+                </div>
+                <ul style="font-size: 12px; line-height: 14.4px;" data-cid="g3WyCn">
+                    <li data-cid="sBs-vN">Launch official website and portfolio</li>
+                    <li data-cid="HK89Yz">Sign 3-5 recurring clients</li>
+                    <li data-cid="1110pt">Expand into email marketing</li>
+                    <li data-cid="7kEZ9i">Start a monthly newsletter with marketing tips</li>
+                    <li style="font-size: 12px;" data-cid="-Ky0zV">Build an internal resource library for clients</li>
+                </ul>
+            </div>
+        </main>
+        
+        <footer class="contact-footer" data-cid="C41cDt">
+            <div class="contact-item" data-cid="5DbsGf">
+                <svg viewBox="0 0 24 24" data-cid="Wc7ywu"><path d="M22 6C22 4.9 21.1 4 20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6M20 6L12 11L4 6H20M20 18H4V8L12 13L20 8V18Z" data-cid="QGbPfJ"></path></svg>
+                <span data-cid="-BcZHN">hello@reallygreatsite.com</span>
+            </div>
+            <div class="contact-item" data-cid="olej-c">
+                <svg viewBox="0 0 24 24" data-cid="kOzKcX"><path d="M6.62,10.79C8.06,13.62 10.38,15.94 13.21,17.38L15.41,15.18C15.69,14.9 16.08,14.82 16.43,14.93C17.55,15.3 18.75,15.5 20,15.5A1,1 0 0,1 21,16.5V20A1,1 0 0,1 20,21A17,17 0 0,1 3,4A1,1 0 0,1 4,3H7.5A1,1 0 0,1 8.5,4C8.5,5.25 8.7,6.45 9.07,7.57C9.18,7.92 9.1,8.31 8.82,8.59L6.62,10.79Z" data-cid="ZgAmLV"></path></svg>
+                <span data-cid="7WRWDm">+123-456-7890</span>
+            </div>
+            <div class="contact-item" data-cid="xytcQX">
+                <svg viewBox="0 0 24 24" data-cid="uKOuIR"><path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,19.93C7.05,19.44 4,16.08 4,12C4,11.38 4.08,10.78 4.21,10.21L9,15V16A2,2 0 0,0 11,18V19.93M17.9,17.39L14,13.5V11A1,1 0 0,0 13,10H9V8H11A1,1 0 0,0 12,7V5A1,1 0 0,0 11,4H9V3.07C10.95,3.55 12.75,4.72 13.97,6.44L14.7,5.7C13.88,4.5 12.8,3.5 11.5,2.91V2.05C15.95,2.56 19.44,5.92 20,10.3C20,10.78 19.92,11.23 19.79,11.66L17.9,17.39Z" data-cid="faS6jh"></path></svg>
+                <span data-cid="U639GU">www.reallygreatsite.com</span>
+            </div>
+        </footer>
+    </div>
+
+
+
+</body></html>

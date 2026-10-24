@@ -1,0 +1,7 @@
+id: tea-dunkability
+title: 饼干泡茶模拟器
+prompt: |
+  生成一个 React 页面，模拟经典饼干泡茶的可泡性：滑块控制茶温、浸泡时间、饼干类型和结构完整性；动画展示带蒸汽的茶杯循环、显示碎屑计图表、过度浸泡时撒落碎屑；毛玻璃卡片、深色模式、键盘快捷键
+screenshot_url: /tea-dunkability.png
+tags:
+  - 互动

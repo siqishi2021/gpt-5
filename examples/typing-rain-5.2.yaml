@@ -1,0 +1,11 @@
+id: typing-rain-5.2
+title: 打字雨
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：打字雨
+  - 目标：在下落的单词到达底部之前输入它们
+  - 功能：逐渐增加的难度、准确率追踪、分数
+  - UI 应为城市背景，带有动画雨滴单词
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/typing-rain-5.2.png
+tags:
+  - 游戏

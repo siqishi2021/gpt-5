@@ -1,0 +1,9 @@
+id: website_template_3
+title: 橙白极简风格
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  浅蓝+白清新色调，对称规整排版，结合风景大图、数据模块与目的地卡片，风格简约舒适，适配综合旅行资讯平台。
+screenshot_url: /website_template_3.png
+tags:
+  - website
+  - 中文版

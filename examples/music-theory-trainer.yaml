@@ -1,0 +1,11 @@
+id: music-theory-trainer
+title: 音乐理论训练器
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：音乐理论训练器
+  - 目标：教授音符、音阶和和弦
+  - 功能：互动钢琴、听音训练练习
+  - UI 应为音乐主题，互动性强且有趣
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/music-theory-trainer.png
+tags:
+  - 应用

@@ -1,0 +1,9 @@
+id: website_template_4
+title: 荧光绿活力风格
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  深色底配荧光绿高亮，紧凑功能向排版，聚焦预订表单与目的地卡片，风格现代干练，适配旅行票务预订平台。
+screenshot_url: /website_template_4.png
+tags:
+  - website
+  - 中文版

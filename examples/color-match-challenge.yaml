@@ -1,0 +1,10 @@
+id: color-match-challenge
+title: 颜色匹配挑战
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，用于快节奏的“颜色匹配”游戏。
+  - 显示一个词语（例如“红色”），使用随机字体颜色 — 玩家必须点击正确的颜色按钮（而不是词语的含义）
+  - 根据 30 秒内的正确答案数量计分
+  - 使用大号字体、颜色编码的按钮、以及平滑的按钮按压动画
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/color-match-challenge.png
+tags:
+  - 游戏

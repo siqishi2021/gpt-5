@@ -1,0 +1,11 @@
+id: nonprofit-impact-report
+title: 非营利组织影响力报告
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：非营利组织影响力报告
+  - 目标：展示项目的可衡量成果
+  - 功能：信息图表、成功案例、捐赠链接
+  - UI 应鼓舞人心且视觉上吸引人
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/nonprofit-impact-report.png
+tags:
+  - 落地页

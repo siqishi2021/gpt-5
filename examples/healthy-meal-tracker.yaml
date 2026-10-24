@@ -1,0 +1,11 @@
+id: healthy-meal-tracker
+title: 健康餐食追踪器
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：健康餐食追踪器
+  - 目标：记录餐食和营养信息
+  - 功能：配料列表、每餐卡路里、每日摘要
+  - UI 应简洁，配以食物图标
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/healthy-meal-tracker.png
+tags:
+  - 应用

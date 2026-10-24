@@ -1,0 +1,13 @@
+id: micro-habit-tracker
+title: 微习惯追踪器
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：微习惯追踪器
+  - 目标：追踪最多 7 个日常习惯，带连续记录和简单图表
+  - 功能：添加、编辑、删除习惯；每日打卡；连续记录计数器；“跳过一天”选项；导出/导入 JSON
+  - 设计应简洁明了，适合日常使用，但应能激励和鼓舞用户
+  - 必须兼容笔记本和移动屏幕
+  - 为演示目的，默认包含几天的示例数据
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/micro-habit-tracker.png
+tags:
+  - 应用

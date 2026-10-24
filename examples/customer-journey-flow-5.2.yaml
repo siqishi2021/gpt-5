@@ -1,0 +1,11 @@
+id: customer-journey-flow-5.2
+title: 客户旅程流程图
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：客户旅程流程图
+  - 目标：可视化客户从认知到购买的步骤
+  - 功能：可编辑的阶段、拖拽连接线
+  - UI 应简洁，类似流程图风格
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/customer-journey-flow-5.2.png
+tags:
+  - 工具

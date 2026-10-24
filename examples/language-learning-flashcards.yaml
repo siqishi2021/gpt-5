@@ -1,0 +1,12 @@
+id: language-learning-flashcards
+title: 语言学习闪卡
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，用于互动式语言闪卡。
+  - 询问访客想学习哪种语言（英语、西班牙语、法语或日语）
+  - 根据访客的地区设置默认翻译 UI
+  - 显示带翻转动画的卡片，背面显示翻译
+  - 每种语言内置 10 个问题；这十个应该是旅行时有用的短语
+  - 包含“洗牌”和“标记为已学”功能，带平滑动画
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/language-learning-flashcards.png
+tags:
+  - 应用

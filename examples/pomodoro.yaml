@@ -1,0 +1,11 @@
+id: pomodoro
+title: 番茄钟
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：番茄钟
+  - 目标：计时器 + 会话记录
+  - 功能：自定义时长、自动开始选项、会话图表（SVG）、声音提醒（哔声）、深色模式
+  - UI 应适合日常使用，并给用户带来活力！
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/pomodoro.png
+tags:
+  - 实用工具

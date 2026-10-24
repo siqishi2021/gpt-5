@@ -1,0 +1,11 @@
+id: falling-object-catcher
+title: 接水果游戏
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，用于一个接住下落物体的游戏。
+  - 玩家控制底部的篮子（方向键或鼠标）接住下落的水果
+  - 每接住一个得分增加；错过 3 次游戏结束
+  - 使用明亮、活泼的颜色，平滑的动画，清晰的分数显示
+  - 下落物体应足够大，适合儿童
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/falling-object-catcher.png
+tags:
+  - 游戏

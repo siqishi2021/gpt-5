@@ -1,0 +1,11 @@
+id: cloud-painter
+title: 云朵绘画师（儿童版）
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：云朵绘画师
+  - 目标：通过用画笔工具绘制云朵来绘制天空；适合儿童玩耍
+  - 功能：多种笔刷形状、云朵飘动动画、天空中飞行的飞机、保存图片
+  - UI 应柔和且充满奇思妙想
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/cloud-painter.png
+tags:
+  - 互动

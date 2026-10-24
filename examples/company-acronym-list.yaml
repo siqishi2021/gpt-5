@@ -1,0 +1,11 @@
+id: company-acronym-list
+title: 公司缩略词列表
+prompt: |
+  创建一个单页应用，使用单个 HTML 文件，满足以下要求：
+  - 名称：公司缩略词列表
+  - 目标：帮助用户学习和记忆公司内部缩略词
+  - 功能：搜索栏查找缩略词、带定义的列表视图、分类标签（如团队、项目、流程）、测试知识的测验模式
+  - UI 应简洁、专业且易于导航，响应式布局适配桌面和移动端
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/company-acronym-list.png
+tags:
+  - 实用工具

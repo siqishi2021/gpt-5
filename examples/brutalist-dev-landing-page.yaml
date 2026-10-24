@@ -1,0 +1,15 @@
+id: brutalist-dev-landing-page
+title: 野兽派开发者平台
+prompt: |
+  标题：野兽派开发者平台落地页
+  提示词：
+  构建一个用于野兽派开发者平台落地页的单个 HTML 文件。
+  风格：单色、超大字体、严格的 12 列网格、可见轮廓、锐利边角；光标显示网格坐标。
+  首屏：鲜明的标题、一句话价值主张、两个行动号召按钮（“免费开始”、“文档”），背景为实时终端演示，模拟输入 API 调用示例。
+  证明区：SVG 徽标墙 + 亮色/暗色反转切换。
+  功能特性：3 个代码片段卡片，带标签页（JS/Python/cURL），复制到剪贴板 + 提示工具。
+  定价：3 层定价表格，带粘性表头，行动号召按钮打开注册弹窗。
+  页脚：键盘可导航的网站地图 + 社交链接；仅使用 SVG；响应式且加载快速。
+screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/brutalist-dev-landing-page.png
+tags:
+  - 落地页
