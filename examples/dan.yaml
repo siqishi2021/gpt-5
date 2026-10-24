@@ -1,4 +1,4 @@
-id: artisan-csa
+id: dan
 title: 手工艺 CSA 农场
 prompt: |
   标题：手工艺 CSA — 手绘风格农场落地页
@@ -11,6 +11,6 @@ prompt: |
   地图：嵌入带配送半径叠加层的静态地图图片；自提点列表带距离标签。
   用户评价：卡片轮播，农民肖像以线描艺术形式呈现。
   常见问题 + 联系：带平滑展开/收起的折叠面板；简单的邮件表单；支持无障碍访问和键盘操作；完全响应式。
-screenshot_url: https://cdn.openai.com/devhub/gpt5prompts/artisan-csa.png
+screenshot_url: /you-vs.png
 tags:
   - 落地页
