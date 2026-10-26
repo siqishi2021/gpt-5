@@ -98,7 +98,7 @@ export function AppGrid({
             items-center justify-center
             gap-2 px-4
           "
-          aria-label="课程分页"
+          aria-label="Course pagination"
         >
           <button
             type="button"
@@ -115,7 +115,7 @@ export function AppGrid({
               disabled:opacity-40
             "
           >
-            上一页
+            Previous
           </button>
 
           <span
@@ -125,7 +125,7 @@ export function AppGrid({
               text-muted-foreground
             "
           >
-            第 {currentPage} / {totalPages} 页
+            Page {currentPage} / {totalPages}
           </span>
 
           <button
@@ -143,7 +143,7 @@ export function AppGrid({
               disabled:opacity-40
             "
           >
-            下一页
+            Next
           </button>
         </nav>
       )}

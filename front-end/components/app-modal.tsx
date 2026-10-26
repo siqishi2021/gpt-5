@@ -179,18 +179,18 @@ export function AppModal({
         }
 
         console.error(
-          "获取源码失败:",
+          "Failed to fetch source code:",
           error
         );
 
         setSourceCode(
-          `<!-- ❌ 无法加载源码
+          `<!-- ❌ Unable to load source code
 
-// 可能原因：
-// 1. 跨域限制
-// 2. 网络问题
-// 3. 目标站点禁止跨域读取
-// 4. 目标站点限制源码访问
+// Possible reasons:
+// 1. CORS restrictions
+// 2. Network issues
+// 3. Target site forbids cross-origin reads
+// 4. Target site blocks source access
 -->`
         );
       } finally {
@@ -243,7 +243,7 @@ export function AppModal({
           }, 2000);
       } catch (error) {
         console.error(
-          "复制失败:",
+          "Copy failed:",
           error
         );
       }
@@ -290,7 +290,7 @@ export function AppModal({
                 "
               />
               <span className="text-sm text-gray-500">
-                加载源码中...
+                Loading source code...
               </span>
             </div>
           </div>
@@ -326,11 +326,11 @@ export function AppModal({
         >
           <div className="px-6 text-center">
             <p className="text-sm text-muted-foreground">
-              无法加载此课程
+              Unable to load this course
             </p>
 
             <p className="mt-1 text-xs text-muted-foreground">
-              当前课程域名未加入白名单
+              The domain of this course is not in the whitelist
             </p>
           </div>
         </div>
@@ -352,11 +352,11 @@ export function AppModal({
             </div>
 
             <h3 className="text-lg font-semibold">
-              课程预览
+              Course Preview
             </h3>
 
             <p className="mt-2 text-sm text-muted-foreground">
-              课程页面资源较大，点击后再加载，可以明显减少首页和弹窗的等待时间。
+              This course page is large. Click below to load it and significantly reduce the waiting time for the homepage and the modal.
             </p>
 
             <button
@@ -372,7 +372,7 @@ export function AppModal({
                 hover:opacity-90
               "
             >
-              加载课程内容
+              Load Course Content
             </button>
           </div>
         </div>
@@ -402,7 +402,7 @@ export function AppModal({
               />
 
               <span className="text-sm text-gray-500">
-                正在加载课程...
+                Loading course...
               </span>
             </div>
           </div>
@@ -410,7 +410,7 @@ export function AppModal({
 
         <iframe
           src={active.iframeUrl}
-          title={`${active.title} 演示`}
+          title={`${active.title} demo`}
           className="h-full w-full border-0"
           allow={iframePermissions}
           sandbox="
@@ -483,7 +483,7 @@ export function AppModal({
                   "
                 >
                   <Eye size={14} />
-                  查看预览
+                  View Preview
                 </button>
 
                 <button
@@ -513,8 +513,8 @@ export function AppModal({
                   )}
 
                   {copied
-                    ? "已复制"
-                    : "复制源码"}
+                    ? "Copied"
+                    : "Copy Source"}
                 </button>
               </>
             ) : (
@@ -536,7 +536,7 @@ export function AppModal({
                 "
               >
                 <Code size={14} />
-                查看源码
+                View Source
               </button>
             )}
           </div>
@@ -605,7 +605,7 @@ export function AppModal({
                   <ExternalLink
                     size={14}
                   />
-                  新窗口打开
+                  Open in New Window
                 </Link>
               </div>
 
@@ -633,7 +633,7 @@ export function AppModal({
                   "
                 >
                   <Shuffle size={16} />
-                  在 ChatGPT 中打开
+                  Open in ChatGPT
                 </Link>
 
                 <CopyButton
@@ -660,7 +660,7 @@ export function AppModal({
                   text-gray-900
                 "
               >
-                📝 生成提示词:
+                📝 Generation Prompt:
               </div>
 
               <div className="relative min-h-0 flex-1 overflow-auto">
@@ -719,7 +719,7 @@ export function AppModal({
                 transition-colors
                 hover:bg-gray-100
               "
-              aria-label="关闭"
+              aria-label="Close"
             >
               <X
                 size={20}
@@ -752,8 +752,8 @@ export function AppModal({
               "
               aria-label={
                 showSourceCode
-                  ? "查看预览"
-                  : "查看源码"
+                  ? "View Preview"
+                  : "View Source"
               }
             >
               {showSourceCode ? (
@@ -781,7 +781,7 @@ export function AppModal({
                   transition-colors
                   hover:bg-gray-100
                 "
-                aria-label="复制源码"
+                aria-label="Copy Source"
               >
                 {copied ? (
                   <Check
@@ -839,7 +839,7 @@ export function AppModal({
                 <ExternalLink
                   size={13}
                 />
-                新窗口打开
+                Open in New Window
               </Link>
 
               <Link
@@ -859,7 +859,7 @@ export function AppModal({
                 "
               >
                 <Shuffle size={13} />
-                在 ChatGPT 中打开
+                Open in ChatGPT
               </Link>
 
               <CopyButton
@@ -876,7 +876,7 @@ export function AppModal({
                 text-gray-500
               "
             >
-              📝 生成提示词
+              📝 Generation Prompt
             </div>
 
             <div
