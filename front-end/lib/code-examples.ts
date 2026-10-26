@@ -8,7 +8,7 @@ export interface CodeExampleYAML {
   title?: string;
   name?: string;
   prompt?: string;
-  screenshot_url?: string;  // ✅ 添加这个字段
+  screenshot_url?: string;
   tags?: unknown;
   camera?: unknown;
   microphone?: unknown;
@@ -39,7 +39,7 @@ function toBool(value: unknown): boolean | undefined {
   return typeof value === "boolean" ? value : undefined;
 }
 
-export async function loadApps(): Promise<CodeExample[]> {
+async function loadAppsUncached(): Promise<CodeExample[]> {
   const repoRoot = path.resolve(process.cwd(), "..");
   const files = await loadYamlFiles(repoRoot);
   const apps: CodeExample[] = [];
@@ -56,9 +56,8 @@ export async function loadApps(): Promise<CodeExample[]> {
       const prompt = obj.prompt || "";
       if (!title || !prompt) continue;
 
-      // ✅ 优先使用 screenshot_url
-      const poster = obj.screenshot_url 
-        ? obj.screenshot_url 
+      const poster = obj.screenshot_url
+        ? obj.screenshot_url
         : `${CDN_BASE_URL}/${slug}.png`;
 
       apps.push({
@@ -78,4 +77,13 @@ export async function loadApps(): Promise<CodeExample[]> {
 
   apps.sort((a, b) => a.title.localeCompare(b.title));
   return apps;
+}
+
+let appsCache: Promise<CodeExample[]> | null = null;
+
+export function loadApps(): Promise<CodeExample[]> {
+  if (!appsCache) {
+    appsCache = loadAppsUncached();
+  }
+  return appsCache;
 }

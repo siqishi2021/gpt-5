@@ -1,20 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import type { CodeExample } from "@/lib/code-examples";
 import { CopyButton } from "@/components/ui/copy-button";
-import { 
-  Shuffle, 
-  Code, 
-  Eye, 
-  ExternalLink, 
-  Check, 
+import {
+  Shuffle,
+  Code,
+  Eye,
+  ExternalLink,
+  Check,
   Copy,
-  X
+  X,
 } from "lucide-react";
 import Link from "next/link";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { isAllowedIframeUrl } from "@/lib/iframe-security";
+
+const CHATGPT_MODEL = "gpt-5";
 
 interface AppModalProps {
   active: CodeExample | null;
@@ -23,29 +30,64 @@ interface AppModalProps {
   onCopy: () => void;
 }
 
-export function AppModal({ active, open, onOpenChange }: AppModalProps) {
-  const [showSourceCode, setShowSourceCode] = React.useState(false);
-  const [sourceCode, setSourceCode] = React.useState<string | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
-  const [copied, setCopied] = React.useState(false);
-  const [isMobile, setIsMobile] = React.useState(false);
+export function AppModal({
+  active,
+  open,
+  onOpenChange,
+}: AppModalProps) {
+  const [showSourceCode, setShowSourceCode] =
+    React.useState(false);
 
-  const abortControllerRef = React.useRef<AbortController | null>(null);
-  const copyTimeoutRef = React.useRef<NodeJS.Timeout | undefined>(undefined);
+  const [sourceCode, setSourceCode] =
+    React.useState<string | null>(null);
+
+  const [isLoading, setIsLoading] =
+    React.useState(false);
+
+  const [copied, setCopied] =
+    React.useState(false);
+
+  const [isMobile, setIsMobile] =
+    React.useState(false);
+
+  const [iframeLoaded, setIframeLoaded] =
+    React.useState(false);
+
+  const [iframeLoading, setIframeLoading] =
+    React.useState(true);
+
+  const abortControllerRef =
+    React.useRef<AbortController | null>(null);
+
+  const copyTimeoutRef =
+    React.useRef<ReturnType<typeof setTimeout> | null>(
+      null
+    );
 
   React.useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+
+    window.addEventListener(
+      "resize",
+      checkMobile
+    );
+
+    return () => {
+      window.removeEventListener(
+        "resize",
+        checkMobile
+      );
+    };
   }, []);
 
   React.useEffect(() => {
     return () => {
       abortControllerRef.current?.abort();
+
       if (copyTimeoutRef.current) {
         clearTimeout(copyTimeoutRef.current);
       }
@@ -53,330 +95,844 @@ export function AppModal({ active, open, onOpenChange }: AppModalProps) {
   }, []);
 
   const iframePermissions = React.useMemo(() => {
-    const perms = [
-      active?.camera && "camera",
-      active?.microphone && "microphone",
-    ].filter(Boolean);
-    return perms.length > 0 ? perms.join("; ") : undefined;
+    if (!active) return undefined;
+
+    const permissions: string[] = [];
+
+    if (active.camera) {
+      permissions.push("camera");
+    }
+
+    if (active.microphone) {
+      permissions.push("microphone");
+    }
+
+    return permissions.length
+      ? permissions.join("; ")
+      : undefined;
   }, [active]);
 
-  const fetchSourceCode = React.useCallback(async () => {
-    if (!active) return;
-    
-    abortControllerRef.current?.abort();
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-    
-    setIsLoading(true);
-    try {
-      const response = await fetch(active.iframeUrl, {
-        signal: controller.signal,
-        cache: 'force-cache'
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      const html = await response.text();
-      
-      if (!controller.signal.aborted) {
-        setSourceCode(html);
-      }
-    } catch (error) {
-      if (error instanceof DOMException && error.name === 'AbortError') {
+  const iframeAllowed = React.useMemo(() => {
+    if (!active) return false;
+
+    return isAllowedIframeUrl(
+      active.iframeUrl
+    );
+  }, [active]);
+
+  const chatGPTUrl = React.useMemo(() => {
+    if (!active) {
+      return "https://chatgpt.com/";
+    }
+
+    const params = new URLSearchParams({
+      model: CHATGPT_MODEL,
+      prompt: active.prompt,
+    });
+
+    return `https://chatgpt.com/?${params.toString()}`;
+  }, [active]);
+
+  const fetchSourceCode =
+    React.useCallback(async () => {
+      if (!active || !iframeAllowed) {
         return;
       }
-      console.error("获取源码失败:", error);
-      setSourceCode("<!-- ❌ 无法加载源码\n// 可能原因：跨域限制、网络问题或目标站点限制 -->");
-    } finally {
-      if (!controller.signal.aborted) {
-        setIsLoading(false);
-      }
-    }
-  }, [active]);
 
-  const toggleSourceCode = React.useCallback(() => {
-    if (!showSourceCode && !sourceCode && !isLoading) {
-      fetchSourceCode();
-    }
-    setShowSourceCode(!showSourceCode);
-  }, [showSourceCode, sourceCode, isLoading, fetchSourceCode]);
+      abortControllerRef.current?.abort();
 
-  const copySourceCode = React.useCallback(async () => {
-    if (!sourceCode) return;
-    
-    try {
-      await navigator.clipboard?.writeText(sourceCode);
-      setCopied(true);
-      
-      if (copyTimeoutRef.current) {
-        clearTimeout(copyTimeoutRef.current);
+      const controller =
+        new AbortController();
+
+      abortControllerRef.current =
+        controller;
+
+      setIsLoading(true);
+
+      try {
+        const response = await fetch(
+          active.iframeUrl,
+          {
+            signal: controller.signal,
+            cache: "force-cache",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(
+            `HTTP ${response.status}`
+          );
+        }
+
+        const html =
+          await response.text();
+
+        if (!controller.signal.aborted) {
+          setSourceCode(html);
+        }
+      } catch (error) {
+        if (
+          error instanceof DOMException &&
+          error.name === "AbortError"
+        ) {
+          return;
+        }
+
+        console.error(
+          "获取源码失败:",
+          error
+        );
+
+        setSourceCode(
+          `<!-- ❌ 无法加载源码
+
+// 可能原因：
+// 1. 跨域限制
+// 2. 网络问题
+// 3. 目标站点禁止跨域读取
+// 4. 目标站点限制源码访问
+-->`
+        );
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoading(false);
+        }
       }
-      copyTimeoutRef.current = setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("复制失败:", error);
-    }
-  }, [sourceCode]);
+    }, [active, iframeAllowed]);
+
+  const toggleSourceCode =
+    React.useCallback(() => {
+      if (
+        !showSourceCode &&
+        !sourceCode &&
+        !isLoading
+      ) {
+        void fetchSourceCode();
+      }
+
+      setShowSourceCode(
+        (value) => !value
+      );
+    }, [
+      showSourceCode,
+      sourceCode,
+      isLoading,
+      fetchSourceCode,
+    ]);
+
+  const copySourceCode =
+    React.useCallback(async () => {
+      if (!sourceCode) return;
+
+      try {
+        await navigator.clipboard.writeText(
+          sourceCode
+        );
+
+        setCopied(true);
+
+        if (copyTimeoutRef.current) {
+          clearTimeout(
+            copyTimeoutRef.current
+          );
+        }
+
+        copyTimeoutRef.current =
+          setTimeout(() => {
+            setCopied(false);
+          }, 2000);
+      } catch (error) {
+        console.error(
+          "复制失败:",
+          error
+        );
+      }
+    }, [sourceCode]);
 
   React.useEffect(() => {
+    abortControllerRef.current?.abort();
+
     setShowSourceCode(false);
     setSourceCode(null);
     setIsLoading(false);
     setCopied(false);
-    abortControllerRef.current?.abort();
-  }, [active]);
 
-  if (!active) return null;
+    setIframeLoaded(false);
+    setIframeLoading(true);
+  }, [active, open]);
 
-  // 桌面端布局（保持原样）
-  const DesktopLayout = () => (
-    <div className="flex w-full h-full flex-col-reverse gap-6 md:flex-row overflow-hidden min-h-0">
-      <div className="flex w-full flex-col md:w-2/3 overflow-hidden min-h-0">
-        {showSourceCode ? (
-          <div className="flex-1 w-full rounded border overflow-hidden flex flex-col min-h-0">
-            <div className="flex items-center justify-between px-4 py-2.5 bg-gray-100 border-b shrink-0">
-              <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                <Code size={16} />
-                HTML 源代码
+  const loadIframe =
+    React.useCallback(() => {
+      setIframeLoading(true);
+      setIframeLoaded(true);
+    }, []);
+
+  if (!active) {
+    return null;
+  }
+
+  const renderPreview = (
+    className: string
+  ) => {
+    if (showSourceCode) {
+      if (isLoading) {
+        return (
+          <div
+            className={`${className} flex items-center justify-center`}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <div
+                className="
+                  h-6 w-6 animate-spin
+                  rounded-full border-2
+                  border-blue-500
+                  border-t-transparent
+                "
+              />
+              <span className="text-sm text-gray-500">
+                加载源码中...
               </span>
-              <div className="flex items-center gap-1">
-                <button
-                  onClick={copySourceCode}
-                  className="p-1.5 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-1 text-sm"
-                >
-                  {copied ? (
-                    <>
-                      <Check size={14} className="text-green-600" />
-                      <span className="text-green-600 text-xs">已复制</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy size={14} />
-                      <span className="text-xs">复制</span>
-                    </>
-                  )}
-                </button>
-                <button
-                  onClick={toggleSourceCode}
-                  className="p-1.5 rounded-md hover:bg-gray-200 transition-colors flex items-center gap-1 text-sm"
-                >
-                  <Eye size={14} />
-                  <span className="text-xs">预览</span>
-                </button>
-              </div>
             </div>
-            {isLoading ? (
-              <div className="flex-1 flex items-center justify-center">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="w-6 h-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-gray-500 text-sm">加载源码中...</span>
-                </div>
-              </div>
-            ) : (
-              <pre className="flex-1 overflow-auto p-4 text-sm font-mono bg-gray-50 whitespace-pre-wrap break-all">
-                <code>{sourceCode}</code>
-              </pre>
-            )}
           </div>
-        ) : (
-          <div className="flex-1 w-full rounded border overflow-hidden bg-white">
-            <iframe
-              src={active.iframeUrl}
-              title={`${active.title} 演示`}
-              className="h-full w-full"
-              allow={iframePermissions}
-            />
+        );
+      }
+
+      return (
+        <pre
+          className={`
+            ${className}
+            overflow-auto
+            bg-gray-50 p-4
+            text-sm font-mono
+            whitespace-pre-wrap
+            break-all
+          `}
+        >
+          <code>
+            {sourceCode}
+          </code>
+        </pre>
+      );
+    }
+
+    if (!iframeAllowed) {
+      return (
+        <div
+          className={`
+            ${className}
+            flex items-center justify-center
+            bg-muted/30
+          `}
+        >
+          <div className="px-6 text-center">
+            <p className="text-sm text-muted-foreground">
+              无法加载此课程
+            </p>
+
+            <p className="mt-1 text-xs text-muted-foreground">
+              当前课程域名未加入白名单
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!iframeLoaded) {
+      return (
+        <div
+          className={`
+            ${className}
+            flex items-center justify-center
+            bg-muted/30
+          `}
+        >
+          <div className="flex max-w-sm flex-col items-center px-6 text-center">
+            <div className="mb-4 rounded-2xl bg-primary/10 p-4">
+              <Eye className="h-8 w-8 text-primary" />
+            </div>
+
+            <h3 className="text-lg font-semibold">
+              课程预览
+            </h3>
+
+            <p className="mt-2 text-sm text-muted-foreground">
+              课程页面资源较大，点击后再加载，可以明显减少首页和弹窗的等待时间。
+            </p>
+
+            <button
+              type="button"
+              onClick={loadIframe}
+              className="
+                mt-5 rounded-lg
+                bg-primary
+                px-5 py-2.5
+                text-sm font-medium
+                text-primary-foreground
+                transition-opacity
+                hover:opacity-90
+              "
+            >
+              加载课程内容
+            </button>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div
+        className={`${className} relative`}
+      >
+        {iframeLoading && (
+          <div
+            className="
+              absolute inset-0 z-10
+              flex items-center justify-center
+              bg-white/80
+            "
+          >
+            <div className="flex flex-col items-center gap-2">
+              <div
+                className="
+                  h-6 w-6 animate-spin
+                  rounded-full border-2
+                  border-blue-500
+                  border-t-transparent
+                "
+              />
+
+              <span className="text-sm text-gray-500">
+                正在加载课程...
+              </span>
+            </div>
           </div>
         )}
+
+        <iframe
+          src={active.iframeUrl}
+          title={`${active.title} 演示`}
+          className="h-full w-full border-0"
+          allow={iframePermissions}
+          sandbox="
+            allow-scripts
+            allow-same-origin
+            allow-forms
+            allow-popups
+          "
+          referrerPolicy="strict-origin-when-cross-origin"
+          onLoad={() =>
+            setIframeLoading(false)
+          }
+        />
       </div>
+    );
+  };
 
-      <div className="flex w-full min-h-0 flex-col gap-3 md:w-1/3">
-        <div className="flex flex-col items-center justify-center w-full h-full box-border pt-4 md:pt-0 overflow-hidden">
-          <div className="flex flex-col items-center justify-between mb-4 shrink-0">
-            <DialogTitle className="text-2xl font-semibold leading-tight flex items-center gap-2">
-              {active.title}
-            </DialogTitle>
+  const DesktopLayout =
+    () => (
+      <div
+        className="
+          flex h-full w-full
+          min-h-0
+          flex-col-reverse
+          gap-6
+          overflow-hidden
+          md:flex-row
+        "
+      >
+        <div
+          className="
+            flex min-h-0
+            w-full flex-col
+            overflow-hidden
+            md:w-2/3
+          "
+        >
+          <div
+            className="
+              min-h-0 flex-1
+              w-full
+              overflow-hidden
+              rounded border
+              bg-white
+            "
+          >
+            {renderPreview(
+              "h-full w-full"
+            )}
+          </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-              <Link
-                href={active.iframeUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 text-gray-500 text-sm hover:text-gray-700 transition-colors duration-100 px-3 py-1.5 rounded-md hover:bg-gray-100 border border-gray-200"
+          <div className="mt-2 flex gap-2">
+            {showSourceCode ? (
+              <>
+                <button
+                  type="button"
+                  onClick={
+                    toggleSourceCode
+                  }
+                  className="
+                    inline-flex
+                    items-center gap-1.5
+                    rounded-md
+                    border border-gray-200
+                    px-3 py-1.5
+                    text-sm text-gray-500
+                    transition-colors
+                    hover:bg-gray-100
+                    hover:text-gray-700
+                  "
+                >
+                  <Eye size={14} />
+                  查看预览
+                </button>
+
+                <button
+                  type="button"
+                  onClick={
+                    copySourceCode
+                  }
+                  className="
+                    inline-flex
+                    items-center gap-1.5
+                    rounded-md
+                    border border-gray-200
+                    px-3 py-1.5
+                    text-sm text-gray-500
+                    transition-colors
+                    hover:bg-gray-100
+                    hover:text-gray-700
+                  "
+                >
+                  {copied ? (
+                    <Check
+                      size={14}
+                      className="text-green-600"
+                    />
+                  ) : (
+                    <Copy size={14} />
+                  )}
+
+                  {copied
+                    ? "已复制"
+                    : "复制源码"}
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={
+                  toggleSourceCode
+                }
+                className="
+                  inline-flex
+                  items-center gap-1.5
+                  rounded-md
+                  border border-gray-200
+                  px-3 py-1.5
+                  text-sm text-gray-500
+                  transition-colors
+                  hover:bg-gray-100
+                  hover:text-gray-700
+                "
               >
-                <ExternalLink size={14} />
+                <Code size={14} />
+                查看源码
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div
+          className="
+            flex min-h-0
+            w-full flex-col gap-3
+            md:w-1/3
+          "
+        >
+          <div
+            className="
+              box-border
+              flex h-full min-h-0
+              flex-col items-center
+              justify-center
+              overflow-hidden
+              pt-4
+              md:pt-0
+            "
+          >
+            <div
+              className="
+                mb-4 flex shrink-0
+                flex-col items-center
+                justify-between
+              "
+            >
+              <DialogTitle
+                className="
+                  flex items-center gap-2
+                  text-2xl font-semibold
+                  leading-tight
+                "
+              >
+                {active.title}
+              </DialogTitle>
+
+              <div
+                className="
+                  mt-3 flex flex-wrap
+                  items-center justify-center
+                  gap-2
+                "
+              >
+                <Link
+                  href={
+                    active.iframeUrl
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    inline-flex
+                    items-center gap-1.5
+                    rounded-md
+                    border border-gray-200
+                    px-3 py-1.5
+                    text-sm text-gray-500
+                    transition-colors
+                    hover:bg-gray-100
+                    hover:text-gray-700
+                  "
+                >
+                  <ExternalLink
+                    size={14}
+                  />
+                  新窗口打开
+                </Link>
+              </div>
+
+              <div
+                className="
+                  mt-5 flex
+                  justify-center gap-2
+                  md:justify-start
+                "
+              >
+                <Link
+                  href={chatGPTUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="
+                    flex items-center gap-2
+                    rounded-lg
+                    bg-gradient-to-r
+                    from-blue-500
+                    to-purple-600
+                    px-3 py-1.5
+                    text-sm text-white
+                    transition-opacity
+                    hover:opacity-90
+                  "
+                >
+                  <Shuffle size={16} />
+                  在 ChatGPT 中打开
+                </Link>
+
+                <CopyButton
+                  copyValue={() =>
+                    active.prompt
+                  }
+                />
+              </div>
+            </div>
+
+            <div
+              className="
+                flex min-h-0
+                w-full flex-1
+                flex-col
+                px-4 py-6
+              "
+            >
+              <div
+                className="
+                  mb-2 flex shrink-0
+                  items-center gap-2
+                  text-sm font-medium
+                  text-gray-900
+                "
+              >
+                📝 生成提示词:
+              </div>
+
+              <div className="relative min-h-0 flex-1 overflow-auto">
+                <div
+                  className="
+                    rounded-lg
+                    border border-gray-200
+                    bg-gray-50
+                    p-3
+                    font-mono text-sm
+                    whitespace-pre-wrap
+                    break-words
+                  "
+                >
+                  {active.prompt}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+
+  const MobileLayout =
+    () => (
+      <div className="flex h-full flex-col bg-white">
+        <VisuallyHidden asChild>
+          <DialogTitle>
+            {active.title}
+          </DialogTitle>
+        </VisuallyHidden>
+
+        <div
+          className="
+            flex shrink-0
+            items-center justify-between
+            border-b bg-white
+            px-4 py-3
+          "
+        >
+          <div
+            className="
+              flex min-w-0
+              flex-1 items-center gap-2
+            "
+          >
+            <button
+              type="button"
+              onClick={() =>
+                onOpenChange(false)
+              }
+              className="
+                -ml-1.5 shrink-0
+                rounded-full
+                p-1.5
+                transition-colors
+                hover:bg-gray-100
+              "
+              aria-label="关闭"
+            >
+              <X
+                size={20}
+                className="text-gray-700"
+              />
+            </button>
+
+            <span
+              className="
+                truncate
+                text-base font-semibold
+                text-gray-900
+              "
+            >
+              {active.title}
+            </span>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1">
+            <button
+              type="button"
+              onClick={
+                toggleSourceCode
+              }
+              className="
+                rounded-full
+                p-2
+                transition-colors
+                hover:bg-gray-100
+              "
+              aria-label={
+                showSourceCode
+                  ? "查看预览"
+                  : "查看源码"
+              }
+            >
+              {showSourceCode ? (
+                <Eye
+                  size={18}
+                  className="text-gray-700"
+                />
+              ) : (
+                <Code
+                  size={18}
+                  className="text-gray-700"
+                />
+              )}
+            </button>
+
+            {showSourceCode && (
+              <button
+                type="button"
+                onClick={
+                  copySourceCode
+                }
+                className="
+                  rounded-full
+                  p-2
+                  transition-colors
+                  hover:bg-gray-100
+                "
+                aria-label="复制源码"
+              >
+                {copied ? (
+                  <Check
+                    size={18}
+                    className="text-green-600"
+                  />
+                ) : (
+                  <Copy
+                    size={18}
+                    className="text-gray-700"
+                  />
+                )}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className="flex min-h-0 flex-1 flex-col">
+          <div className="min-h-0 flex-1 bg-white">
+            {renderPreview(
+              "h-full w-full"
+            )}
+          </div>
+
+          <div
+            className="
+              border-t
+              bg-white
+              px-4 py-3
+            "
+          >
+            <div
+              className="
+                mb-3 flex flex-wrap gap-2
+              "
+            >
+              <Link
+                href={
+                  active.iframeUrl
+                }
+                target="_blank"
+                rel="noopener noreferrer"
+                className="
+                  inline-flex
+                  items-center gap-1.5
+                  rounded-lg
+                  bg-gray-100
+                  px-3 py-2
+                  text-xs font-medium
+                  text-gray-700
+                  transition-colors
+                  hover:bg-gray-200
+                "
+              >
+                <ExternalLink
+                  size={13}
+                />
                 新窗口打开
               </Link>
 
-              <button
-                onClick={toggleSourceCode}
-                className="inline-flex items-center gap-1.5 text-gray-500 text-sm hover:text-gray-700 transition-colors duration-100 px-3 py-1.5 rounded-md hover:bg-gray-100 border border-gray-200"
-              >
-                <Code size={14} />
-                {showSourceCode ? "查看预览" : "查看源码"}
-              </button>
-            </div>
-
-            <div className="flex justify-center gap-2 mt-5 md:justify-start">
               <Link
-                href={`https://chatgpt.com/?model=gpt-5&prompt=${encodeURIComponent(
-                  active.prompt
-                )}`}
+                href={chatGPTUrl}
                 target="_blank"
-                rel="noreferrer"
-                className="flex items-center gap-2 text-sm bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:opacity-90 px-3 py-1.5 rounded-lg transition-opacity"
+                rel="noopener noreferrer"
+                className="
+                  inline-flex
+                  items-center gap-1.5
+                  rounded-lg
+                  bg-gradient-to-r
+                  from-blue-500
+                  to-purple-600
+                  px-3 py-2
+                  text-xs font-medium
+                  text-white
+                "
               >
-                <Shuffle size={16} />
+                <Shuffle size={13} />
                 在 ChatGPT 中打开
               </Link>
-              <CopyButton copyValue={() => active.prompt} />
-            </div>
-          </div>
 
-          <div className="px-4 py-6 w-full min-h-0 flex-1 flex flex-col">
-            <div className="text-sm text-gray-900 font-medium mb-2 flex items-center gap-2 shrink-0">
-              📝 生成提示词:
+              <CopyButton
+                copyValue={() =>
+                  active.prompt
+                }
+              />
             </div>
-            <div className="relative overflow-auto min-h-0 flex-1">
-              <div className="whitespace-pre-wrap break-words font-mono text-sm p-3 bg-gray-50 rounded-lg border border-gray-200">
+
+            <div
+              className="
+                mb-1.5
+                text-xs font-semibold
+                text-gray-500
+              "
+            >
+              📝 生成提示词
+            </div>
+
+            <div
+              className="
+                max-h-32
+                overflow-y-auto
+                rounded-lg
+                border border-gray-100
+                bg-gray-50 p-3
+              "
+            >
+              <pre
+                className="
+                  whitespace-pre-wrap
+                  break-words
+                  font-mono
+                  text-xs text-gray-700
+                "
+              >
                 {active.prompt}
-              </div>
+              </pre>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-
-  // 移动端布局
-  const MobileLayout = () => (
-    <div className="flex flex-col h-full bg-white">
-      {/* ✅ 隐藏的 DialogTitle 满足无障碍要求 */}
-      <VisuallyHidden asChild>
-        <DialogTitle>{active.title}</DialogTitle>
-      </VisuallyHidden>
-
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-b shrink-0">
-        <div className="flex items-center gap-2 min-w-0 flex-1">
-          <button
-            onClick={() => onOpenChange(false)}
-            className="p-1.5 -ml-1.5 rounded-full hover:bg-gray-100 transition-colors shrink-0"
-            aria-label="关闭"
-          >
-            <X size={20} className="text-gray-700" />
-          </button>
-          <span className="text-base font-semibold text-gray-900 truncate">
-            {active.title}
-          </span>
-        </div>
-        <div className="flex items-center gap-1 shrink-0">
-          <button
-            onClick={toggleSourceCode}
-            className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-            aria-label={showSourceCode ? "查看预览" : "查看源码"}
-          >
-            {showSourceCode ? (
-              <Eye size={18} className="text-gray-700" />
-            ) : (
-              <Code size={18} className="text-gray-700" />
-            )}
-          </button>
-          {showSourceCode && (
-            <button
-              onClick={copySourceCode}
-              className="p-2 rounded-full hover:bg-gray-100 transition-colors"
-              aria-label="复制源码"
-            >
-              {copied ? (
-                <Check size={18} className="text-green-600" />
-              ) : (
-                <Copy size={18} className="text-gray-700" />
-              )}
-            </button>
-          )}
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex-1 min-h-0 bg-white">
-          {showSourceCode ? (
-            isLoading ? (
-              <div className="h-full flex items-center justify-center">
-                <div className="flex flex-col items-center gap-3">
-                  <div className="w-8 h-8 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-                  <span className="text-gray-500 text-sm">加载源码中...</span>
-                </div>
-              </div>
-            ) : (
-              <div className="h-full overflow-auto">
-                <pre className="p-4 text-xs font-mono whitespace-pre-wrap break-all">
-                  <code>{sourceCode}</code>
-                </pre>
-              </div>
-            )
-          ) : (
-            <iframe
-              src={active.iframeUrl}
-              title={`${active.title} 演示`}
-              className="h-full w-full border-0"
-              allow={iframePermissions}
-              sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-              loading="lazy"
-              referrerPolicy="strict-origin-when-cross-origin"
-            />
-          )}
-        </div>
-
-        <div className="bg-white border-t px-4 py-3">
-          <div className="flex flex-wrap gap-2 mb-3">
-            <Link
-              href={active.iframeUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 px-3 py-2 rounded-lg transition-colors"
-            >
-              <ExternalLink size={13} />
-              新窗口打开
-            </Link>
-            
-            <Link
-              href={`https://chatgpt.com/?model=gpt-5&prompt=${encodeURIComponent(
-                active.prompt
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs font-medium text-white bg-gradient-to-r from-blue-500 to-purple-600 px-3 py-2 rounded-lg"
-            >
-              <Shuffle size={13} />
-              在 ChatGPT 中打开
-            </Link>
-
-            <CopyButton copyValue={() => active.prompt} />
-          </div>
-
-          <div className="text-xs font-semibold text-gray-500 mb-1.5">📝 生成提示词</div>
-          <div className="bg-gray-50 rounded-lg p-3 border border-gray-100 max-h-32 overflow-y-auto">
-            <pre className="whitespace-pre-wrap break-words font-mono text-xs text-gray-700">
-              {active.prompt}
-            </pre>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    );
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={`
-        ${isMobile 
-          ? 'h-[100dvh] w-full p-0 overflow-hidden rounded-none border-0 shadow-none [&>button]:hidden'
-          : 'h-[90vh] w-full md:min-w-[80vw] md:h-[80vh] p-4 overflow-hidden'
+    <Dialog
+      open={open}
+      onOpenChange={onOpenChange}
+    >
+      <DialogContent
+        className={
+          isMobile
+            ? `
+              h-[100dvh] w-full
+              rounded-none
+              border-0
+              p-0
+              shadow-none
+              overflow-hidden
+              [&>button]:hidden
+            `
+            : `
+              h-[90vh] w-full
+              overflow-hidden
+              p-4
+              md:h-[80vh]
+              md:min-w-[80vw]
+            `
         }
-      `}>
-        {active && (
-          isMobile ? <MobileLayout /> : <DesktopLayout />
-        )}
+      >
+        {isMobile
+          ? <MobileLayout />
+          : <DesktopLayout />}
       </DialogContent>
     </Dialog>
   );
