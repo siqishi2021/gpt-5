@@ -16,7 +16,7 @@ export default async function Home() {
             rel="noopener noreferrer"
             className="hover:text-blue-600 hover:underline transition-colors"
           >
-            GPT-5 编程应用集合
+            Chatgpt Generative Learning Classroom
           </a>
         </h1>
         <AppGrid apps={apps} />
