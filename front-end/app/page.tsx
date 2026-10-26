@@ -25,7 +25,7 @@ export default async function Home() {
               rel="noopener noreferrer"
               className="transition-colors hover:text-blue-600 hover:underline"
             >
-              Chatgpt Generative Learning Classroom
+              Chatgpt Generative Classroom
             </a>
           </h1>
 

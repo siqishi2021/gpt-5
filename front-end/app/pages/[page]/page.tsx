@@ -68,7 +68,7 @@ export default async function Page({
             className="transition-colors hover:text-blue-600 hover:underline"
           >
           </a>
-            Chatgpt Generative Learning Classroom
+            Chatgpt Generative Classroom
         </h1>
 
         <AppGrid
