@@ -1,23 +1,23 @@
-id: C4eZgv1Jb
-title: Welcome to the World of Electronics
+id: eZG5lPGCIs
+title: 碰撞中的动量与能量守恒
 prompt: |
-  Create a single-page application in a single HTML file for an interactive educational page on "Basic Electronics". The UI language should be English.
+  请用单个 HTML 文件制作一个中文互动教学网页，主题为“碰撞中的动量与能量守恒”。
 
-  Visual: Modern tech style (dark background with neon blue/green accents), card-based layout with thin borders; inline SVG for icons and illustrations.
+  风格：现代科技风（深色背景，霓虹蓝/绿点缀），卡片式布局，使用简洁的内联 SVG 图标。
 
-  Hero: Title "Welcome to the World of Electronics", a short tagline (e.g., "From electrons to circuits, power the future"), a simple circuit illustration, and a "Start Exploring" button scrolling to the interactive area. Top nav anchors: Interactive Circuit / Components / Applications / Quiz.
+  顶部：标题“碰撞中的动量与能量守恒”，一句标语（如“碰撞之间，定律永恒”），一个简单的碰撞示意图，以及“开始探索”按钮。顶部导航包含：碰撞模拟 / 核心概念 / 现实应用 / 随堂测验。
 
-  Interactive Circuit (Core): A simple circuit simulator. Provide a toggle switch (On/Off) and a voltage slider (1V - 9V). On the right, an SVG showing a battery, a resistor, and a lightbulb. When the switch is on, the bulb lights up (color change/glow), and a data panel displays the current (simulated). A "Reset" button to restore defaults.
+  碰撞模拟（核心）：提供一个小球碰撞模拟器。包含一个“开始/重置”按钮，以及一个控制小球速度的滑块（1 - 10 m/s）。右侧用 SVG 展示两个小球碰撞前后的动画。碰撞发生时，面板实时显示动量变化和能量变化的数据。
 
-  Components: 3 knowledge cards (Resistor, Capacitor, LED), each with a short description and a simple inline SVG icon.
+  核心概念：3 张卡片（动量守恒、能量守恒、弹性碰撞），每张带简短说明和简单的内联 SVG 图标。
 
-  Applications: 3 cards (Smartphones, Electric Vehicles, Smart Homes), each with an SVG icon, name, and a one-sentence description.
+  现实应用：3 张卡片（汽车安全气囊、台球运动、粒子对撞机），带图标和一句话描述。
 
-  Quiz: 3 multiple-choice questions. Instant feedback with explanations upon selection. Show final score and a "Try Again" button at the end.
+  随堂测验：3 道单选题，点击选项后立刻显示对错与解析，最后显示总分和“重新挑战”按钮。
 
-  Footer: Copyright info and a "Back to Top" link.
+  底部：版权信息与“返回顶部”链接。
 
-  Requirements: All CSS and JS inlined, no external resources, no network requests. Semantic HTML, keyboard accessible, responsive on mobile and desktop (no horizontal scroll at 360px width).
-screenshot_url: /C4eZgv1Jb.png
+  要求：所有 CSS 和 JS 都内联，不依赖外部资源，不发送网络请求。语义化 HTML，支持键盘操作，手机和电脑端自适应。
+screenshot_url: /eZG5lPGCIs.PNG
 tags:
   - landing-page
