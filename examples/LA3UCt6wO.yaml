@@ -1,0 +1,23 @@
+id: LA3UCt6wO
+title: Nature's Solar Panels
+prompt: |
+  Create a single-page application in a single HTML file for an interactive educational page on "Nature's Solar Panels". The UI language should be English.
+
+  Visual: Modern nature-tech style (dark background with neon green/teal accents), card-based layout with thin borders; inline SVG for icons and illustrations.
+
+  Hero: Title "Nature's Solar Panels", a short tagline (e.g., "From sunlight to life, nature's own energy engine"), a simple leaf-with-sunlight illustration, and a "Start Exploring" button scrolling to the interactive area. Top nav anchors: Interactive Photosynthesis / Nature's Components / Real-World Applications / Quiz.
+
+  Interactive Photosynthesis (Core): A simple photosynthesis simulator. Provide a toggle switch (Day/Night) and a sunlight intensity slider (1–100%). On the right, an SVG showing a leaf, sunlight rays, and a chloroplast. When it's daytime, the leaf lights up (color change/glow), and a data panel displays the oxygen output (simulated). A "Reset" button to restore defaults.
+
+  Nature's Components: 3 knowledge cards (Chloroplast, Stomata, Thylakoid), each with a short description and a simple inline SVG icon.
+
+  Real-World Applications: 3 cards (Bio-Solar Cells, Artificial Photosynthesis, Sustainable Agriculture), each with an SVG icon, name, and a one-sentence description.
+
+  Quiz: 3 multiple-choice questions. Instant feedback with explanations upon selection. Show final score and a "Try Again" button at the end.
+
+  Footer: Copyright info and a "Back to Top" link.
+
+  Requirements: All CSS and JS inlined, no external resources, no network requests. Semantic HTML, keyboard accessible, responsive on mobile and desktop (no horizontal scroll at 360px width).
+screenshot_url: /LA3UCt6wO.png
+tags:
+  - landing-page

@@ -12,14 +12,12 @@ export const AppCard = React.memo(function AppCard({
   app,
   onOpen,
 }: AppCardProps) {
-  const handleClick = React.useCallback(() => {
+  const handlePreviewClick = React.useCallback(() => {
     onOpen(app);
   }, [app, onOpen]);
 
   return (
-    <button
-      type="button"
-      onClick={handleClick}
+    <div
       className="
         group relative flex w-full min-w-0 flex-col
         overflow-hidden rounded-xl
@@ -27,14 +25,22 @@ export const AppCard = React.memo(function AppCard({
         bg-card text-left shadow-sm
         transition-all duration-200
         hover:-translate-y-1 hover:shadow-lg
-        focus:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-ring
-        focus-visible:ring-offset-2
       "
-      aria-label={`打开课程：${app.title}`}
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-muted">
+      {/* 图片区域：点击打开弹窗 */}
+      <button
+        type="button"
+        onClick={handlePreviewClick}
+        className="
+          relative block aspect-[4/3] w-full
+          overflow-hidden bg-muted
+          focus:outline-none
+          focus-visible:ring-2
+          focus-visible:ring-ring
+          focus-visible:ring-inset
+        "
+        aria-label={`预览课程：${app.title}`}
+      >
         <img
           src={app.poster}
           alt=""
@@ -55,20 +61,32 @@ export const AppCard = React.memo(function AppCard({
             group-hover:bg-black/10
           "
         />
-      </div>
+      </button>
 
+      {/* 标题区域：点击直接打开网页 */}
       <div className="min-h-[68px] p-3">
-        <p
+        <a
+          href={app.iframeUrl}
+          target="_blank"
+          rel="noopener noreferrer"
           className="
-            line-clamp-2
+            line-clamp-2 block
             text-sm font-medium
             leading-5 text-foreground
+            transition-colors
+            hover:text-primary
+            focus:outline-none
+            focus-visible:underline
+            focus-visible:ring-2
+            focus-visible:ring-ring
+            focus-visible:ring-offset-2
           "
+          title={app.title}
         >
           {app.title}
-        </p>
+        </a>
       </div>
-    </button>
+    </div>
   );
 });
 
