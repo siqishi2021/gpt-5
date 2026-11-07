@@ -1,0 +1,9 @@
+id: LvxW6QjE
+title: 痛点切入：会员与 API Key
+prompt: |
+  创建一个单页 HTML 文件：一个交互式教育页面，标题为"Vibe Coding 应该这样学"，界面语言为中文。
+
+  视觉风格：深色背景，霓虹蓝/绿点缀色，卡片式布局，内联 SVG 图标。
+screenshot_url: /IMG/LvxW6QjE.PNG
+tags:
+  - landing-page
